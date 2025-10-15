@@ -6,6 +6,93 @@
 window.RPM = window.RPM || {};
 
 /**
+ * Set Initial GSAP States Immediately
+ * This runs when the script loads to prevent flash of unstyled content
+ */
+window.RPM.setInitialStates = function() {
+    // Wait for GSAP to be available, but don't wait too long
+    if (typeof gsap === 'undefined') {
+        if (window.RPM.gsapWaitCount < 20) { // Max 1 second wait
+            window.RPM.gsapWaitCount = (window.RPM.gsapWaitCount || 0) + 1;
+            setTimeout(window.RPM.setInitialStates, 50);
+        }
+        return;
+    }
+    
+    // Set initial states immediately for all animated elements
+    // H2 animations - use CSS class to hide temporarily until SplitText is ready
+    gsap.utils.toArray("h2").forEach((h2) => {
+        if (!h2.closest('.how-it-works-step-content') && 
+            !h2.closest('.footer-blue-section') &&
+            !h2.closest('.footer-nav-links') &&
+            !h2.closest('.footer-bottom') &&
+            !h2.closest('.pay-as-you-go-carousel-track') &&
+            !h2.closest('.social-proof-bar') &&
+            !h2.closest('.success-card-testimonial') &&
+            !h2.closest('.insights-advice-highlights') &&
+            !h2.classList.contains('rpm-title')) {
+            h2.style.visibility = 'hidden';  // Use visibility instead of opacity
+        }
+    });
+    
+    // H1 animations - hero headline uses SplitText, hide temporarily
+    const heroHeadline = document.querySelector('.hero-headline');
+    if (heroHeadline) {
+        heroHeadline.style.visibility = 'hidden';  // Use visibility instead of opacity
+    }
+    gsap.utils.toArray("h1:not(.main-header):not(.hero-headline)").forEach((h1) => {
+        if (!h1.closest('.footer-nav-links') && 
+            !h1.closest('.footer-bottom') &&
+            !h1.closest('.pay-as-you-go-carousel-track') &&
+            !h1.closest('.social-proof-bar')) {
+            gsap.set(h1, { y: 40, opacity: 0 });
+        }
+    });
+    
+    // H3, H4 animations
+    gsap.utils.toArray("h3, h4").forEach((heading) => {
+        if (!heading.closest('.how-it-works-step-content') && 
+            !heading.closest('.footer-blue-section') &&
+            !heading.closest('.footer-nav-links') &&
+            !heading.closest('.footer-bottom') &&
+            !heading.closest('.social-proof-bar') &&
+            !heading.closest('.success-card-testimonial') &&
+            !heading.classList.contains('success-card-title')) {
+            gsap.set(heading, { y: 30, opacity: 0 });
+        }
+    });
+    
+    // Paragraph animations
+    gsap.utils.toArray("p:not(.rpm-stat-number):not(.rpm-stat-label):not(.social-proof-subtitle):not(.testimonial-quote):not(.testimonial-author)").forEach((paragraph) => {
+        if (!paragraph.closest('.how-it-works-step-content') && 
+            !paragraph.closest('.footer-blue-section') && 
+            !paragraph.closest('.footer-rpm-container') &&
+            !paragraph.closest('.footer-nav-links') &&
+            !paragraph.closest('.footer-bottom') &&
+            !paragraph.closest('.pay-as-you-go-carousel-track') &&
+            !paragraph.closest('.social-proof-bar') &&
+            !paragraph.closest('.footer-phone-section') &&
+            !paragraph.closest('.success-card-testimonial') &&
+            !paragraph.closest('.insights-advice-highlights') &&
+            !paragraph.closest('.btn-text-link')) {
+            gsap.set(paragraph, { y: 20, opacity: 0 });
+        }
+    });
+    
+    // Footer phone section
+    gsap.utils.toArray(".footer-phone-section").forEach((section) => {
+        gsap.set(section, { y: 30, opacity: 0 });
+    });
+    
+    console.log('Initial GSAP states set');
+};
+
+// Set initial states immediately when script loads
+window.RPM.setInitialStates();
+
+
+
+/**
  * Intelligent Section-Based Stagger System
  * Automatically detects elements within sections and staggers their animations
  */
@@ -26,7 +113,7 @@ window.RPM.calculateStaggerDelay = function(element) {
     if (!section) return 0;
     
     // Get all animated elements within this section (in DOM order)
-    const animatedElements = Array.from(section.querySelectorAll('p, h1, h2, h3, h4, .btn, .badge, [class*="badge"]'));
+    const animatedElements = Array.from(section.querySelectorAll('p, h1, h2:not(.rpm-title), h3, h4, .btn, .badge, [class*="badge"]'));
     
     // Find the index of current element
     const index = animatedElements.indexOf(element);
@@ -34,14 +121,21 @@ window.RPM.calculateStaggerDelay = function(element) {
     
     // Calculate delay based on position
     // First element = 0, second = 0.15s, third = 0.3s, etc.
-    return index * 0.15;
+    let baseDelay = index * 0.15;
+    
+    // Add extra delay for hero buttons to animate after paragraph
+    if (element.closest('.hero-buttons')) {
+        baseDelay += 1.2; // Extra delay for hero buttons
+    }
+    
+    return baseDelay;
 };
 
 /**
  * Initialize H2 split text animations
  */
 window.RPM.initH2Animations = function() {
-    gsap.utils.toArray("h2:not(.social-proof-title)").forEach((h2) => {
+    gsap.utils.toArray("h2:not(.social-proof-title):not(.rpm-title)").forEach((h2) => {
         // Skip if in excluded sections
         if (h2.closest('.footer-nav-links') || 
             h2.closest('.footer-bottom') ||
@@ -88,6 +182,9 @@ window.RPM.initH2Animations = function() {
         
         // Set h2 to maintain its original height
         h2.style.minHeight = originalHeight + 'px';
+        
+        // Make the h2 visible now that SplitText structure is ready
+        h2.style.visibility = 'visible';
 
         // Set initial state - words clipped and transformed
         gsap.set(wordWrappers, {
@@ -203,6 +300,9 @@ window.RPM.initH1Animations = function() {
         
         // Set h1 to maintain its original height
         heroHeadline.style.minHeight = originalHeight + 'px';
+        
+        // Make the h1 visible now that SplitText structure is ready
+        heroHeadline.style.visibility = 'visible';
 
         // Set initial state - words clipped and transformed
         gsap.set(wordWrappers, {
@@ -486,8 +586,17 @@ window.RPM.initCommonAnimations = function() {
     window.RPM.initDiagonalIconSwap();
 };
 
-// Auto-initialize on DOM ready
-document.addEventListener('DOMContentLoaded', function() {
+// Wait for page loader to finish before starting common animations
+document.addEventListener('pageAnimationsReady', () => {
     window.RPM.initCommonAnimations();
-    console.log('Common animations initialized');
+    console.log('Common animations initialized after page loader');
 });
+
+// Fallback: Initialize after delay if page loader doesn't exist
+setTimeout(() => {
+    if (!document.getElementById('pageLoader')) {
+        // Page loader not found, initialize normally
+        window.RPM.initCommonAnimations();
+        console.log('Common animations initialized (fallback)');
+    }
+}, 1000);

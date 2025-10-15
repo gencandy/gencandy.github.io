@@ -62,16 +62,23 @@
     <!-- DotLottie Web Component -->
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
     
-    <!-- Spline Viewer -->
-    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.80/build/spline-viewer.js"></script>
-    
     <!-- Preload Lottie animations for better performance -->
     <link rel="preconnect" href="https://lottie.host">
     <link rel="dns-prefetch" href="https://lottie.host">
+    
+    <!-- Page Loader Script - Load early for immediate initialization -->
+    <script src="js/page-loader.js"></script>
 </head>
-<body>
-    <!-- Custom Cursor -->
-    <div class="custom-cursor">Next</div>
+<body class="loading">
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader">
+        <!-- Simple loader - can be enhanced later -->
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <!-- Custom Cursor -->
+        <div class="custom-cursor">Next</div>
     
     <!-- Sub-Header -->
     <div class="sub-header">
@@ -242,9 +249,12 @@
     <main>
         <!-- Hero Section -->
         <section class="hero-section">
-            <!-- Spline Animation Background -->
-            <div class="hero-spline">
-                <spline-viewer url="https://prod.spline.design/MofMcvN-lVBVruWi/scene.splinecode"></spline-viewer>
+            <!-- Video Animation Background -->
+            <div class="hero-video">
+                <video muted playsinline preload="metadata">
+                    <source src="assets/rpm-hero-animation.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
             </div>
             
             <div class="hero-container">
@@ -782,29 +792,35 @@
                 </div>
                 
                 <div class="rpm-stat-cards">
-                    <div class="rpm-stat-card">
-                        <div class="rpm-stat-card-icon">
-                            <dotlottie-wc src="https://lottie.host/0444e157-4394-4ef9-a8c9-8fa8e001a49e/TpTZSGgUzQ.lottie" style="width: 80px; height: 80px;" loop mode="bounce" autoplay></dotlottie-wc>
+                    <div class="rpm-stat-card-wrapper">
+                        <div class="rpm-stat-card">
+                            <div class="rpm-stat-card-icon">
+                                <dotlottie-wc src="https://lottie.host/0444e157-4394-4ef9-a8c9-8fa8e001a49e/TpTZSGgUzQ.lottie" style="width: 80px; height: 80px;" loop mode="bounce" autoplay></dotlottie-wc>
+                            </div>
+                            <p class="rpm-stat-card-text">
+                                Trusted with <span class="rpm-stat-card-highlight rpm-scramble-text" data-original-text="$500M in premiums">$500M in premiums</span> by businesses across the country.
+                            </p>
                         </div>
-                        <p class="rpm-stat-card-text">
-                            Trusted with <span class="rpm-stat-card-highlight rpm-scramble-text" data-original-text="$500M in premiums">$500M in premiums</span> by businesses across the country.
-                        </p>
                     </div>
-                    <div class="rpm-stat-card">
-                        <div class="rpm-stat-card-icon">
-                            <dotlottie-wc src="https://lottie.host/b18c8191-fa90-4437-a2fa-067483dff697/W8RoKTwQaq.lottie" style="width: 80px; height: 80px;" loop mode="bounce" autoplay></dotlottie-wc>
+                    <div class="rpm-stat-card-wrapper">
+                        <div class="rpm-stat-card">
+                            <div class="rpm-stat-card-icon">
+                                <dotlottie-wc src="https://lottie.host/b18c8191-fa90-4437-a2fa-067483dff697/W8RoKTwQaq.lottie" style="width: 80px; height: 80px;" loop mode="bounce" autoplay></dotlottie-wc>
+                            </div>
+                            <p class="rpm-stat-card-text">
+                                Clients trust RPM for a <span class="rpm-stat-card-highlight rpm-scramble-text" data-original-text="99% client retention">99% client retention</span> rate year after year.
+                            </p>
                         </div>
-                        <p class="rpm-stat-card-text">
-                            Clients trust RPM for a <span class="rpm-stat-card-highlight rpm-scramble-text" data-original-text="99% client retention">99% client retention</span> rate year after year.
-                        </p>
                     </div>
-                    <div class="rpm-stat-card">
-                        <div class="rpm-stat-card-icon">
-                            <dotlottie-wc src="https://lottie.host/9e3afaa6-4e25-4c4b-aa35-8ba96dd31f56/jxcVWewcvJ.lottie" style="width: 80px; height: 80px;" loop mode="bounce" autoplay></dotlottie-wc>
+                    <div class="rpm-stat-card-wrapper">
+                        <div class="rpm-stat-card">
+                            <div class="rpm-stat-card-icon">
+                                <dotlottie-wc src="https://lottie.host/9e3afaa6-4e25-4c4b-aa35-8ba96dd31f56/jxcVWewcvJ.lottie" style="width: 80px; height: 80px;" loop mode="bounce" autoplay></dotlottie-wc>
+                            </div>
+                            <p class="rpm-stat-card-text">
+                                Enjoy <span class="rpm-stat-card-highlight rpm-scramble-text" data-original-text="zero audit surprises">zero audit surprises</span> with our expert support.
+                            </p>
                         </div>
-                        <p class="rpm-stat-card-text">
-                            Enjoy <span class="rpm-stat-card-highlight rpm-scramble-text" data-original-text="zero audit surprises">zero audit surprises</span> with our expert support.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -1188,6 +1204,7 @@
     <script src="js/global-buttons.js"></script>
     
     <!-- Section-specific modules -->
+    <script src="js/hero.js"></script>
     <script src="js/header-footer.js"></script>
     <script src="js/social-proof.js"></script>
     <script src="js/how-it-works.js"></script>
@@ -1197,5 +1214,6 @@
     <script src="js/insights-advice.js"></script>
     <script src="js/custom-cursor.js"></script>
     <script src="js/button-interactions.js"></script>
+    </div> <!-- End page-content -->
 </body>
 </html>

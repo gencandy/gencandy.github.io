@@ -156,6 +156,12 @@
     width: 100%;
 }
 
+.rpm-stat-card-wrapper {
+    flex: 1;
+    display: flex;
+    margin-top: 50px;
+}
+
 .rpm-stat-card {
     flex: 1;
     background: rgba(255, 254, 248, 0.6); /* More transparent */

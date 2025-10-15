@@ -150,6 +150,7 @@ window.RPM.initLottiePlayer = function(lottiePlayer, maxRetries = 5, retryDelay 
  */
 window.RPM.initStatCardAnimations = function() {
     const statCards = gsap.utils.toArray('.rpm-stat-card');
+    const statCardWrappers = gsap.utils.toArray('.rpm-stat-card-wrapper');
     
     if (statCards.length === 0) {
         console.log('No stat cards found');
@@ -160,20 +161,34 @@ window.RPM.initStatCardAnimations = function() {
     
     // Set initial state for cards
     gsap.set(statCards, {
-        opacity: 1, // Changed from 0 to 1 to make visible immediately
-        y: 0        // Changed from 40 to 0 to reset position
+        opacity: 0, // Hidden initially for entrance animation
+        y: 40       // Move up from below
     });
     
     // Set initial state for icons
     const icons = gsap.utils.toArray('.rpm-stat-card-icon');
     gsap.set(icons, {
-        opacity: 1,    // Changed from 0 to 1 to make visible immediately
-        scale: 1,      // Changed from 0.5 to 1 to show at full size
-        y: 0           // Changed from 20 to 0 to reset position
+        opacity: 0,    // Hidden initially
+        scale: 0.5,    // Start smaller
+        y: 20          // Move up from below
     });
     
-    // Different parallax speeds for staggered parallax effect (more pronounced)
-    const parallaxSpeeds = [-50, -50, -50]; // Increased from [-30, -60, -45]
+    // Same parallax speed for all cards
+    const parallaxSpeeds = [-45, -45, -45]; // Same speed for all wrappers
+    
+    // Apply parallax to wrappers
+    statCardWrappers.forEach((wrapper, index) => {
+        gsap.to(wrapper, {
+            y: parallaxSpeeds[index] || -50,
+            ease: "none",
+            scrollTrigger: {
+                trigger: wrapper,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1,
+            }
+        });
+    });
     
     // Animate in on scroll with entrance animation
     statCards.forEach((card, index) => {
@@ -183,15 +198,15 @@ window.RPM.initStatCardAnimations = function() {
         
         ScrollTrigger.create({
             trigger: card,
-            start: "top 70%", // Changed from 80% to 70%
+            start: "top 80%", // Animate at 80% as requested
             end: "bottom top",
             onEnter: () => {
-                // Animate card
+                // Animate card with stagger
                 gsap.to(card, {
                     opacity: 1,
                     y: 0,
                     duration: 0.8,
-                    delay: index * 0.25,
+                    delay: index * 0.2, // Reduced delay for tighter stagger
                     ease: "power2.out"
                 });
                 
@@ -208,7 +223,7 @@ window.RPM.initStatCardAnimations = function() {
                 // Play Lottie animation with robust retry logic
                 if (lottiePlayer && !hasPlayedLottie) {
                     hasPlayedLottie = true;
-                    const playDelay = 1 + (index * 0.5); // 1s base delay + stagger
+                    const playDelay = 0.6 + (index * 0.3); // Faster and tighter timing
                     
                     gsap.delayedCall(playDelay, () => {
                         window.RPM.initLottiePlayer(lottiePlayer)
@@ -222,18 +237,6 @@ window.RPM.initStatCardAnimations = function() {
                             });
                     });
                 }
-            }
-        });
-        
-        // Add staggered parallax effect - each card moves at different speed on scroll
-        gsap.to(card, {
-            y: parallaxSpeeds[index] || -50,
-            ease: "none",
-            scrollTrigger: {
-                trigger: card,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1,
             }
         });
     });
@@ -503,6 +506,35 @@ window.RPM.initRPMScrollText = function() {
 };
 
 /**
+ * Initialize bottom CTA buttons animation
+ */
+window.RPM.initBottomButtonsAnimation = function() {
+    const buttons = gsap.utils.toArray('.rpm-bottom-buttons .btn');
+    
+    if (buttons.length === 0) return;
+    
+    // Set initial state
+    gsap.set(buttons, {
+        opacity: 0,
+        y: 20
+    });
+    
+    ScrollTrigger.create({
+        trigger: '.rpm-bottom-buttons',
+        start: "top 90%", // Animate a bit earlier than the cards
+        onEnter: () => {
+            gsap.to(buttons, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+        }
+    });
+};
+
+/**
  * Initialize bottom CTA text reveal animation with word-by-word split text
  */
 window.RPM.initBottomTextAnimation = function() {
@@ -562,7 +594,7 @@ window.RPM.initBottomTextAnimation = function() {
     
     ScrollTrigger.create({
         trigger: textElement,
-        start: "top 85%",
+        start: "top 95%", // Start earlier when text is 95% in viewport
         onEnter: () => textTimeline.play(),
         onRefresh: (self) => {
             if (self.isActive) {
@@ -638,15 +670,17 @@ window.RPM.initRPMHeart = function() {
 };
 
 /**
- * Initialize all RPM Difference animations
+ * Main initialization function for RPM Difference section
  */
 window.RPM.initRPMDifference = function() {
     window.RPM.initRPMOverlayFade();
-    window.RPM.initStatCardScramble();
-    window.RPM.initStatCardAnimations();
-    window.RPM.initRPMScrollText();
+    window.RPM.initRPMScrollText(); // Add the scroll text animation
     window.RPM.initBottomTextAnimation();
-    // Legacy functions commented out - remove if no longer needed
+    window.RPM.initBottomButtonsAnimation();
+    window.RPM.initStatCardAnimations();
+    window.RPM.initStatCardScramble();
+    
+    // Disabled functions (kept for reference):
     // window.RPM.initRPMStats();
     // window.RPM.initRPMHeart();
 };

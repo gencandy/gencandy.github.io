@@ -11,8 +11,8 @@
 .hero-section {
     background-color: var(--color-brand-500); /* #005aea */
     box-sizing: border-box;
-    padding-top: 160px;    /* 96px - back to Figma spec */
-    padding-bottom: var(--spacing-11xl); /* 160px - back to Figma spec */
+    padding-top: 160px;    /* Back to original Figma spec */
+    padding-bottom: 160px; /* Back to original Figma spec */
     padding-left: 0;
     padding-right: 0;
     width: 100%;
@@ -22,6 +22,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 16px;
+    min-height: 1000px;
 }
 
 /* ================================
@@ -54,7 +55,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-4xl); /* 32px */
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
     position: relative;
     flex-shrink: 0;
@@ -70,17 +71,22 @@
 
 .hero-headline {
     font-family: var(--font-family-display); /* "Modern Era" */
-    font-size: 120px;
+    font-size: 100px;
     font-weight: var(--font-weight-bold); /* Bold/700 */
-    line-height: 120px;
-    letter-spacing: -2.4px;
+    line-height: 100px;
+    letter-spacing: -2px;
     color: var(--text-white); /* #ffffff */
-    text-align: center;
+    text-align: left;
     margin: 0;
     position: relative;
     flex-shrink: 0;
     width: min-content;
     min-width: 100%;
+}
+
+/* Override SplitText line alignment for left-aligned hero headline */
+.hero-headline .line {
+    text-align: left !important;
 }
 
 /* ================================
@@ -94,11 +100,11 @@
     font-weight: var(--font-weight-regular); /* Regular/400 */
     line-height: 32px; /* Exact from Figma */
     color: var(--text-white); /* #ffffff */
-    text-align: center;
+    text-align: left;
     margin: 0;
     position: relative;
     flex-shrink: 0;
-    width: 1068px;
+    width: 750px;
     max-width: 100%;
 }
 
@@ -194,40 +200,71 @@
         width: 100%;
         padding-top: var(--spacing-xl); /* 16px */
         gap: var(--spacing-md); /* 8px */
+        align-items: flex-start;
     }
 
     .hero-buttons .btn {
         width: 100%;
-        justify-content: center;
+        justify-content: flex-start;
     }
 }
 
 /* ================================
-   Hero Spline Animation Styles - Fullscreen Background
+   Hero Video Animation Styles - Fullscreen Background
    ================================ */
 
-.hero-spline {
+.hero-video {
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: 0;
+    right: 0;
     width: 100%;
-    height: 100%;
+    height: 105%;
     z-index: 0;
     overflow: hidden;
+    /* Parallax performance optimizations */
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
-.hero-spline spline-viewer {
+.hero-video video {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    object-position: bottom right;
     border: none;
     border-radius: 0;
-    background: transparent;
-    overflow: hidden;
+    background: var(--color-brand-500);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    /* Performance optimizations for parallax */
+    will-change: opacity, transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    /* Smooth parallax performance */
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    /* Darken video by 5% */
+    filter: brightness(0.90);
+}
+
+.hero-video video.loaded {
+    opacity: 1;
+}
+
+/* Performance optimization for overlay */
+.hero-video-overlay {
+    will-change: opacity;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* Responsive adjustments - maintain hero section background */
 @media (max-width: 1200px) {
-    .hero-spline {
+    .hero-video {
         /* Maintain hero section background positioning */
         position: absolute;
         top: 0;
@@ -236,14 +273,24 @@
         height: 100%;
     }
     
-    .hero-spline spline-viewer {
+    .hero-video video {
         width: 100%;
         height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        will-change: opacity, transform;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+    }
+
+    .hero-video video.loaded {
+        opacity: 1;
     }
 }
 
 @media (max-width: 768px) {
-    .hero-spline {
+    .hero-video {
         /* Maintain hero section background positioning */
         position: absolute;
         top: 0;
@@ -252,10 +299,20 @@
         height: 100%;
     }
 
-    .hero-spline spline-viewer {
+    .hero-video video {
         width: 100%;
         height: 100%;
+        object-fit: cover;
         border: none;
         border-radius: 0;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        will-change: opacity, transform;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+    }
+
+    .hero-video video.loaded {
+        opacity: 1;
     }
 }
