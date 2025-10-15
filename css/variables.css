@@ -1,3 +1,76 @@
+/* Modern Era Font Face Declarations */
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Medium Italic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Bold Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Modern Era';
+  src: url('../assets/Modern Era/Modern Era Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Figma Design Variables */
 :root {
   /* Colors - Base */
@@ -61,8 +134,8 @@
   --real-aqua: #28cec6;
   
   /* Font Families */
-  --font-family-display: "Modern Era";
-  --font-family-body: "Modern Era";
+  --font-family-display: "Modern Era", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-body: "Modern Era", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   
   /* Font Weights */
   --font-weight-regular: 400;
