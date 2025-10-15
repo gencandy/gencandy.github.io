@@ -125,7 +125,7 @@ window.RPM.calculateStaggerDelay = function(element) {
     
     // Add extra delay for hero buttons to animate after paragraph
     if (element.closest('.hero-buttons')) {
-        baseDelay += 1.2; // Extra delay for hero buttons
+        baseDelay += 1.5; // Extra delay for hero buttons
     }
     
     return baseDelay;
