@@ -1,0 +1,2674 @@
+/**
+ * DEPRECATED: This file has been refactored into modular components
+ * 
+ * This monolithic file (2,639 lines) has been split into 9 focused modules
+ * for better maintainability, performance, and scalability.
+ * 
+ * NEW ARCHITECTURE (loaded from index.html):
+ * ============================================
+ * 1. core.js                    - Foundation, GSAP, Lenis initialization
+ * 2. animations-common.js       - Reusable animations (H1, H2, H3, H4, paragraphs, buttons, badges)
+ * 3. header-footer.js          - Header and footer specific animations
+ * 4. social-proof.js           - Social proof bar with diagonal scrolling
+ * 5. how-it-works.js           - Step animations with connectors and physics
+ * 6. rpm-difference.js         - Stats scramble and scroll text reveal
+ * 7. audit-reviews.js          - Accordion, logo rotation, video scrub
+ * 8. carousels.js              - Success Stories & Pay-As-You-Go with 3D effects
+ * 9. button-interactions.js    - Universal animated button system
+ * 
+ * DOCUMENTATION:
+ * ==============
+ * - See JS_MODULE_DOCUMENTATION.md for detailed API reference
+ * - See REFACTORING_SUMMARY.md for quick start guide
+ * - See ARCHITECTURE_DIAGRAM.md for visual overview
+ * 
+ * USAGE:
+ * ======
+ * All modules auto-initialize on DOM ready via the window.RPM namespace.
+ * No code changes needed - everything works as before!
+ * 
+ * Example manual initialization:
+ *   window.RPM.initButtonInteractions();
+ *   window.RPM.lenis.scrollTo('#section', { duration: 2 });
+ * 
+ * This file can be safely deleted once you've verified everything works.
+ * 
+ * Last updated: October 2025
+ */
+
+console.warn('⚠️ main.js is deprecated. Please use the new modular files instead.');
+console.info('📚 See JS_MODULE_DOCUMENTATION.md for details.');
+
+    ScrollTrigger, 
+    TextPlugin, 
+    Observer, 
+    Draggable, 
+    DrawSVGPlugin, 
+    EaselPlugin, 
+    Flip, 
+    GSDevTools, 
+    InertiaPlugin, 
+    MotionPathHelper, 
+    MotionPathPlugin, 
+    MorphSVGPlugin, 
+    Physics2DPlugin, 
+    PhysicsPropsPlugin, 
+    PixiPlugin, 
+    ScrambleTextPlugin, 
+    ScrollToPlugin, 
+    SplitText, 
+    CustomEase, 
+    CustomBounce, 
+    CustomWiggle
+);
+
+// GSAP Configuration
+gsap.config({
+    nullTargetWarn: false,
+    trialWarn: false
+});
+
+// Set default ease for animations
+gsap.defaults({
+    ease: "power2.out",
+    duration: 1
+});
+
+// Initialize Lenis Smooth Scroller - Award-winning website configuration
+const lenis = new Lenis({
+    duration: 1.8,
+    easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t), // More luxurious easing
+    direction: 'vertical',
+    gestureDirection: 'vertical',
+    smooth: true,
+    mouseMultiplier: 0.8, // Slower, more controlled mouse wheel
+    smoothTouch: false, // Keep native touch for mobile performance
+    touchMultiplier: 1.5, // Refined touch sensitivity
+    infinite: false,
+    normalizeWheel: true, // Consistent across different devices
+    lerp: 0.07, // Lower = smoother but slightly more lag (premium feel)
+    wheelMultiplier: 0.6, // Very smooth wheel scrolling
+    smartphone: {
+        smooth: false // Native scroll on mobile for performance
+    },
+    tablet: {
+        smooth: false // Native scroll on tablets
+    }
+});
+
+// Get scroll value
+lenis.on('scroll', ({ scroll, limit, velocity, direction, progress }) => {
+    // console.log({ scroll, limit, velocity, direction, progress })
+});
+
+// Function to animate scroll
+function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+}
+
+requestAnimationFrame(raf);
+
+// Integrate Lenis with GSAP ScrollTrigger
+lenis.on('scroll', ScrollTrigger.update);
+
+gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+});
+
+gsap.ticker.lagSmoothing(0);
+
+// Advanced smooth scrolling enhancements for premium feel
+// Disable native smooth scrolling to prevent conflicts
+document.documentElement.style.scrollBehavior = 'auto';
+
+// Enhanced scroll performance
+lenis.on('scroll', (e) => {
+    // Update any custom scroll-based animations here
+    // This ensures perfect sync with premium scrolling
+});
+
+// Smooth scroll to top functionality
+window.scrollToTop = () => {
+    lenis.scrollTo(0, {
+        duration: 2.5,
+        easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -8 * t)
+    });
+};
+
+// Premium scroll restoration
+window.addEventListener('beforeunload', () => {
+    lenis.destroy();
+});
+
+// Refined resize handling for consistent smoothness
+let resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        lenis.resize();
+        ScrollTrigger.refresh();
+    }, 100);
+});
+
+// Smooth scroll for anchor links with Lenis - Premium configuration
+$('a[href^="#"]').on('click', function(e) {
+    const target = $(this.getAttribute('href'));
+    if(target.length) {
+        e.preventDefault();
+        lenis.scrollTo(target[0], {
+            offset: -100,
+            duration: 2.2, // Slower, more luxurious
+            easing: (t) => t === 1 ? 1 : 1 - Math.pow(2, -8 * t), // Refined easing curve
+            immediate: false,
+            lock: true // Prevent other scroll during navigation
+        });
+    }
+});
+
+// Add active class to navigation based on scroll position
+$(window).on('scroll', function() {
+    const scrollPosition = $(window).scrollTop();
+    
+    // Update nav items based on section position
+    $('section[id]').each(function() {
+        const sectionTop = $(this).offset().top - 120;
+        const sectionBottom = sectionTop + $(this).outerHeight();
+        const sectionId = $(this).attr('id');
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            $('.main-nav .nav-item').removeClass('active');
+            $(`.main-nav .nav-item[href="#${sectionId}"]`).addClass('active');
+        }
+    });
+});
+
+// Sticky header on scroll
+$(window).on('scroll', function() {
+    if ($(window).scrollTop() > 50) {
+        $('.main-header').addClass('sticky');
+    } else {
+        $('.main-header').removeClass('sticky');
+    }
+});
+
+// =====================================
+// GSAP ANIMATIONS
+// =====================================
+
+// =====================================
+// WORLD-CLASS ICON ANIMATION ON LOAD
+// =====================================
+document.addEventListener('DOMContentLoaded', function() {
+    const iconWrapper = document.querySelector('.how-it-works-icon');
+    const iconImg = document.querySelector('.how-it-works-icon img');
+    
+    if (!iconWrapper || !iconImg) return;
+    
+    // Set initial state
+    gsap.set(iconWrapper, {
+        perspective: 1000,
+        transformStyle: 'preserve-3d'
+    });
+    
+    gsap.set(iconImg, {
+        scale: 0,
+        opacity: 0,
+        rotationY: -180,
+        rotationX: -45,
+        z: -500,
+        filter: 'blur(20px) brightness(2)',
+        transformOrigin: 'center center'
+    });
+    
+    iconWrapper.style.position = 'relative';
+    
+    // Create glow element
+    const glowElement = document.createElement('div');
+    glowElement.className = 'icon-glow';
+    glowElement.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120%;
+        height: 120%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(191,216,255,0.2) 30%, transparent 70%);
+        filter: blur(20px);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+    `;
+    iconWrapper.appendChild(glowElement);
+    iconImg.style.position = 'relative';
+    iconImg.style.zIndex = '2';
+    
+    // Master timeline for award-winning animation
+    const masterTL = gsap.timeline({
+        delay: 0.8,
+        onComplete: () => {
+            // Subtle floating animation loop
+            gsap.to(iconImg, {
+                y: -8,
+                duration: 2.5,
+                ease: 'sine.inOut',
+                yoyo: true,
+                repeat: -1
+            });
+            
+            // Subtle rotation loop
+            gsap.to(iconImg, {
+                rotationZ: 2,
+                duration: 3,
+                ease: 'sine.inOut',
+                yoyo: true,
+                repeat: -1
+            });
+            
+            // Ambient glow pulse
+            gsap.to(glowElement, {
+                opacity: 0.6,
+                scale: 1.1,
+                duration: 2,
+                ease: 'sine.inOut',
+                yoyo: true,
+                repeat: -1
+            });
+        }
+    });
+    
+    // Main icon entrance with 3D transformation
+    masterTL.to(iconImg, {
+        scale: 1.2,
+        opacity: 1,
+        rotationY: 0,
+        rotationX: 0,
+        z: 0,
+        filter: 'blur(0px) brightness(1)',
+        duration: 1.4,
+        ease: 'expo.out'
+    }, 0.2)
+    
+    // Elastic bounce with overshoot
+    .to(iconImg, {
+        scale: 1,
+        duration: 0.8,
+        ease: 'elastic.out(1, 0.5)'
+    }, '-=0.4')
+    
+    // Glow burst
+    .to(glowElement, {
+        opacity: 1,
+        scale: 1.3,
+        duration: 1,
+        ease: 'expo.out'
+    }, 0.3)
+    
+    .to(glowElement, {
+        opacity: 0.3,
+        scale: 1,
+        duration: 0.6,
+        ease: 'power2.inOut'
+    }, '-=0.3');
+    
+    // Hover interaction - Award-winning micro-animation with slick rotation
+    let rotationTween;
+    
+    iconWrapper.addEventListener('mouseenter', () => {
+        gsap.to(iconImg, {
+            scale: 1.15,
+            duration: 0.6,
+            ease: 'elastic.out(1, 0.4)',
+            overwrite: 'auto'
+        });
+        
+        // Slick continuous rotation on hover
+        rotationTween = gsap.to(iconImg, {
+            rotation: '+=360',
+            duration: 1.2,
+            ease: 'power2.inOut',
+            repeat: -1,
+            overwrite: 'auto'
+        });
+        
+        gsap.to(glowElement, {
+            opacity: 0.8,
+            scale: 1.4,
+            duration: 0.6,
+            ease: 'power2.out'
+        });
+    });
+    
+    iconWrapper.addEventListener('mouseleave', () => {
+        // Stop rotation smoothly
+        if (rotationTween) {
+            rotationTween.kill();
+        }
+        
+        // Get current rotation and snap to nearest 360 degree increment
+        const currentRotation = gsap.getProperty(iconImg, 'rotation');
+        const nearestComplete = Math.round(currentRotation / 360) * 360;
+        
+        gsap.to(iconImg, {
+            scale: 1,
+            rotation: nearestComplete,
+            duration: 0.8,
+            ease: 'elastic.out(1, 0.4)'
+        });
+        
+        gsap.to(glowElement, {
+            opacity: 0.3,
+            scale: 1,
+            duration: 0.6,
+            ease: 'power2.out'
+        });
+    });
+});
+
+// Footer RPM text animations with ScrollTrigger
+gsap.set([".rpm-layer-1", ".rpm-layer-2", ".rpm-layer-3"], {
+    y: 50,
+    opacity: 0
+});
+
+ScrollTrigger.create({
+    trigger: ".footer-blue-section",
+    start: "top 80%",
+    end: "bottom 20%",
+    animation: gsap.timeline()
+        .to(".rpm-layer-3", {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power2.out"
+        })
+        .to(".rpm-layer-2", {
+            y: 0,
+            opacity: 0.6,
+            duration: 0.6,
+            ease: "power2.out"
+        }, "-=0.4")
+        .to(".rpm-layer-1", {
+            y: 0,
+            opacity: 0.3,
+            duration: 0.4,
+            ease: "power2.out"
+        }, "-=0.2"),
+    toggleActions: "play none none reverse"
+});
+
+// =====================================
+// WORLD-CLASS SPLIT TEXT ANIMATIONS FOR H2
+// =====================================
+
+// Split and animate all h2 elements with premium reveal
+gsap.utils.toArray("h2").forEach((h2) => {
+    // Store original height to prevent layout shift
+    const originalHeight = h2.offsetHeight;
+    
+    // Split text into words and lines for better control
+    const split = new SplitText(h2, {
+        type: "lines,words",
+        linesClass: "line",
+        wordsClass: "word"
+    });
+    
+    // Wrap each word in a clipping container
+    const wordWrappers = [];
+    split.words.forEach(word => {
+        // Create wrapper for clipping
+        const wrapper = document.createElement('div');
+        wrapper.className = 'word-wrapper';
+        wrapper.style.display = 'inline-block';
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.verticalAlign = 'top';
+        
+        // Create inner element for animation
+        const inner = document.createElement('div');
+        inner.className = 'word-inner';
+        inner.style.display = 'inline-block';
+        inner.innerHTML = word.innerHTML;
+        
+        // Replace word content with wrapped version
+        word.innerHTML = '';
+        word.appendChild(wrapper);
+        wrapper.appendChild(inner);
+        
+        wordWrappers.push(inner);
+    });
+    
+    // Set h2 to maintain its original height
+    h2.style.minHeight = originalHeight + 'px';
+
+    // Set initial state - words clipped and transformed
+    gsap.set(wordWrappers, {
+        y: '100%',
+        opacity: 0
+    });
+
+    // Create the reveal animation with ScrollTrigger - autoplay with reverse
+    const headingTimeline = gsap.timeline({ paused: true });
+    headingTimeline.to(wordWrappers, {
+        y: '0%',
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.08,
+        ease: "power2.out"
+    });
+
+    ScrollTrigger.create({
+        trigger: h2,
+        start: "top 85%",
+        end: "bottom 0%",
+        onEnter: () => headingTimeline.play(),
+        onLeave: () => headingTimeline.reverse(),
+        onEnterBack: () => headingTimeline.play(),
+        onLeaveBack: () => headingTimeline.reverse(),
+        onRefresh: (self) => {
+            // If already in view on page load, play immediately
+            if (self.isActive) {
+                headingTimeline.play();
+            }
+        },
+        // markers: true // Uncomment for debugging
+    });
+});
+
+// =====================================
+// CONSOLIDATED COMPONENT ANIMATIONS WITH GSAP
+// =====================================
+
+// H3 and H4 Animations - Consistent entrance/exit at 85% viewport
+// Exclude headings in sections with custom animations (how-it-works-step-content) and footer
+gsap.utils.toArray("h3, h4").forEach((heading) => {
+    // Skip headings inside how-it-works-step-content as they have custom animations
+    // Skip headings inside footer
+    if (heading.closest('.how-it-works-step-content') || heading.closest('.site-footer')) {
+        return;
+    }
+    
+    gsap.set(heading, {
+        y: 40,
+        opacity: 0
+    });
+    
+    const headingTimeline = gsap.timeline({ paused: true });
+    headingTimeline.to(heading, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+    });
+    
+    ScrollTrigger.create({
+        trigger: heading,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => headingTimeline.play(),
+        onLeave: () => headingTimeline.reverse(),
+        onEnterBack: () => headingTimeline.play(),
+        onLeaveBack: () => headingTimeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                headingTimeline.play();
+            }
+        }
+    });
+});
+
+// Paragraph Animations - Consistent entrance/exit at 85% viewport
+// Exclude paragraphs in sections with custom animations (how-it-works-step-content) and footer
+gsap.utils.toArray("p:not(.rpm-stat-number):not(.rpm-stat-label)").forEach((paragraph) => {
+    // Skip paragraphs inside how-it-works-step-content as they have custom animations
+    // Skip paragraphs inside footer
+    // Skip paragraphs inside pay-as-you-go-carousel-track
+    if (paragraph.closest('.how-it-works-step-content') || 
+        paragraph.closest('.site-footer') || 
+        paragraph.closest('.pay-as-you-go-carousel-track')) {
+        return;
+    }
+    
+    gsap.set(paragraph, {
+        y: 30,
+        opacity: 0
+    });
+    
+    const paragraphTimeline = gsap.timeline({ paused: true });
+    paragraphTimeline.to(paragraph, {
+        y: 0,
+        opacity: 1,
+        duration: 0.7,
+        ease: "power2.out"
+    });
+    
+    ScrollTrigger.create({
+        trigger: paragraph,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => paragraphTimeline.play(),
+        onLeave: () => paragraphTimeline.reverse(),
+        onEnterBack: () => paragraphTimeline.play(),
+        onLeaveBack: () => paragraphTimeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                paragraphTimeline.play();
+            }
+        }
+    });
+});
+
+// Text Link CTA Animations - fade only, no movement
+// Text links fade in animation (excluding custom animated buttons)
+gsap.utils.toArray(".how-it-works-step-cta, .pay-as-you-go-header-cta, .audit-reviews-cta, .success-stories-cta").forEach((textLink) => {
+    gsap.set(textLink, {
+        opacity: 0
+    });
+    
+    const textLinkTimeline = gsap.timeline({ paused: true });
+    textLinkTimeline.to(textLink, {
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+    });
+    
+    ScrollTrigger.create({
+        trigger: textLink,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => textLinkTimeline.play(),
+        onLeave: () => textLinkTimeline.reverse(),
+        onEnterBack: () => textLinkTimeline.play(),
+        onLeaveBack: () => textLinkTimeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                textLinkTimeline.play();
+            }
+        }
+    });
+});
+
+// Button Animations (excluding text link CTAs)
+gsap.utils.toArray(".btn:not(.how-it-works-cta):not(.how-it-works-step-cta):not(.pay-as-you-go-header-cta):not(.audit-reviews-cta):not(.success-stories-cta)").forEach((button) => {
+    gsap.set(button, {
+        y: 30,
+        opacity: 0
+    });
+    
+    const buttonTimeline = gsap.timeline({ paused: true });
+    buttonTimeline.to(button, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+    });
+    
+    ScrollTrigger.create({
+        trigger: button,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => buttonTimeline.play(),
+        onLeave: () => buttonTimeline.reverse(),
+        onEnterBack: () => buttonTimeline.play(),
+        onLeaveBack: () => buttonTimeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                buttonTimeline.play();
+            }
+        }
+    });
+});
+
+// H1 Animations (if any outside header)
+gsap.utils.toArray("h1:not(.main-header)").forEach((h1) => {
+    gsap.set(h1, {
+        y: 40,
+        opacity: 0
+    });
+    
+    const h1Timeline = gsap.timeline({ paused: true });
+    h1Timeline.to(h1, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+    });
+    
+    ScrollTrigger.create({
+        trigger: h1,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => h1Timeline.play(),
+        onLeave: () => h1Timeline.reverse(),
+        onEnterBack: () => h1Timeline.play(),
+        onLeaveBack: () => h1Timeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                h1Timeline.play();
+            }
+        }
+    });
+});
+
+// Badge/Tag Animations - fade and scale in
+gsap.utils.toArray(".insights-advice-badge, .badge, [class*='badge']:not(.badge-dot)").forEach((badge) => {
+    gsap.set(badge, {
+        scale: 0.9,
+        opacity: 0
+    });
+    
+    const badgeTimeline = gsap.timeline({ paused: true });
+    badgeTimeline.to(badge, {
+        scale: 1,
+        opacity: 1,
+        duration: 0.6,
+        ease: "back.out(1.2)"
+    });
+    
+    ScrollTrigger.create({
+        trigger: badge,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => badgeTimeline.play(),
+        onLeave: () => badgeTimeline.reverse(),
+        onEnterBack: () => badgeTimeline.play(),
+        onLeaveBack: () => badgeTimeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                badgeTimeline.play();
+            }
+        }
+    });
+});
+
+// Insights Advice Button Animation
+gsap.utils.toArray(".insights-advice-btn").forEach((button) => {
+    gsap.set(button, {
+        y: 30,
+        opacity: 0
+    });
+    
+    const buttonTimeline = gsap.timeline({ paused: true });
+    buttonTimeline.to(button, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: "power2.out"
+    });
+    
+    ScrollTrigger.create({
+        trigger: button,
+        start: "top 85%",
+        end: "bottom 15%",
+        onEnter: () => buttonTimeline.play(),
+        onLeave: () => buttonTimeline.reverse(),
+        onEnterBack: () => buttonTimeline.play(),
+        onLeaveBack: () => buttonTimeline.reverse(),
+        onRefresh: (self) => {
+            if (self.isActive) {
+                buttonTimeline.play();
+            }
+        }
+    });
+});
+
+// Scramble text animation for stat numbers
+const statNumbers = gsap.utils.toArray('.rpm-stat-number');
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$%';
+
+statNumbers.forEach((stat, index) => {
+    const originalText = stat.textContent;
+    const textLength = originalText.length;
+    
+    // Store original text in data attribute for hover functionality
+    stat.setAttribute('data-original-text', originalText);
+    
+    let scrambleInterval = null;
+    
+    // Function to generate scrambled text
+    const scrambleText = () => {
+        return originalText
+            .split('')
+            .map((char) => {
+                if (char === ' ') return ' ';
+                return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join('');
+    };
+    
+    // Function to continuously scramble
+    const startScrambling = () => {
+        if (scrambleInterval) return; // Already scrambling
+        scrambleInterval = setInterval(() => {
+            stat.textContent = scrambleText();
+        }, 100);
+    };
+    
+    // Function to unscramble - all characters at once
+    const unscramble = () => {
+        if (scrambleInterval) {
+            clearInterval(scrambleInterval);
+            scrambleInterval = null;
+        }
+        
+        const staggerDelay = index * 200;
+        let scrambleCount = 0;
+        const maxScrambles = 8; // Number of times to scramble before revealing
+        
+        setTimeout(() => {
+            const interval = setInterval(() => {
+                if (scrambleCount < maxScrambles) {
+                    // Keep scrambling all characters
+                    stat.textContent = scrambleText();
+                    scrambleCount++;
+                } else {
+                    // Reveal all at once
+                    clearInterval(interval);
+                    stat.textContent = originalText;
+                }
+            }, 100);
+        }, staggerDelay);
+    };
+    
+    // Start with scrambled text
+    stat.textContent = scrambleText();
+    startScrambling();
+    
+    ScrollTrigger.create({
+        trigger: stat,
+        start: "top 100%",
+        end: "bottom -200px", // Exit viewport + 200px before re-scrambling
+        onEnter: () => {
+            unscramble();
+        },
+        onLeave: () => {
+            startScrambling();
+        },
+        onEnterBack: () => {
+            unscramble();
+        },
+        onLeaveBack: () => {
+            startScrambling();
+        }
+    });
+});
+
+// Add hover scramble effect to stat containers
+const statContainersForHover = gsap.utils.toArray('.rpm-stat');
+statContainersForHover.forEach((container) => {
+    const statNumber = container.querySelector('.rpm-stat-number');
+    if (!statNumber) return;
+    
+    // Get original text from data attribute
+    const originalText = statNumber.getAttribute('data-original-text');
+    if (!originalText) return;
+    
+    let hoverInterval = null;
+    let hoverTimeout = null;
+    
+    const stopScrambling = () => {
+        if (hoverInterval) {
+            clearInterval(hoverInterval);
+            hoverInterval = null;
+        }
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = null;
+        }
+        statNumber.textContent = originalText;
+    };
+    
+    container.addEventListener('mouseenter', () => {
+        // Clear any existing intervals/timeouts
+        if (hoverInterval) clearInterval(hoverInterval);
+        if (hoverTimeout) clearTimeout(hoverTimeout);
+        
+        // Start scrambling
+        hoverInterval = setInterval(() => {
+            statNumber.textContent = originalText
+                .split('')
+                .map((char) => {
+                    if (char === ' ') return ' ';
+                    return chars[Math.floor(Math.random() * chars.length)];
+                })
+                .join('');
+        }, 50);
+        
+        // Stop after 2 seconds and show correct text
+        hoverTimeout = setTimeout(() => {
+            stopScrambling();
+        }, 500);
+    });
+    
+    container.addEventListener('mouseleave', () => {
+        // Show correct text immediately when mouse leaves
+        stopScrambling();
+    });
+});
+
+// Animate stat labels (subtext) with autoplay and reverse
+const statLabels = gsap.utils.toArray('.rpm-stat-label');
+if (statLabels.length > 0) {
+    gsap.set(statLabels, {
+        opacity: 0,
+        y: 20
+    });
+    
+    statLabels.forEach((label, index) => {
+        const tl = gsap.timeline({ paused: true });
+        
+        tl.to(label, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            delay: index * 0.15,
+            ease: "power2.out"
+        });
+        
+        ScrollTrigger.create({
+            trigger: label,
+            start: "top 95%",
+            end: "bottom top",
+            onEnter: () => {
+                tl.play();
+            },
+            onLeave: () => {
+                tl.reverse();
+            },
+            onEnterBack: () => {
+                tl.play();
+            },
+            onLeaveBack: () => {
+                tl.reverse();
+            }
+        });
+    });
+}
+
+// Animate top border line for stats with reverse
+const statContainers = gsap.utils.toArray('.rpm-stat');
+if (statContainers.length > 0) {
+    statContainers.forEach((stat, index) => {
+        // Set initial state
+        stat.style.setProperty('--line-width', '0%');
+        
+        ScrollTrigger.create({
+            trigger: stat,
+            start: "top 85%",
+            end: "bottom 0%",
+            onEnter: () => {
+                gsap.to(stat, {
+                    '--line-width': '100%',
+                    duration: 1.2,
+                    delay: index * 0.15,
+                    ease: "power2.out",
+                    onUpdate: function() {
+                        const progress = this.progress();
+                        stat.style.setProperty('--line-width', `${progress * 100}%`);
+                    }
+                });
+            },
+            onLeave: () => {
+                gsap.to(stat, {
+                    '--line-width': '0%',
+                    duration: 0.8,
+                    ease: "power2.in",
+                    onUpdate: function() {
+                        const progress = 1 - this.progress();
+                        stat.style.setProperty('--line-width', `${progress * 100}%`);
+                    }
+                });
+            },
+            onEnterBack: () => {
+                gsap.to(stat, {
+                    '--line-width': '100%',
+                    duration: 1.2,
+                    delay: index * 0.15,
+                    ease: "power2.out",
+                    onUpdate: function() {
+                        const progress = this.progress();
+                        stat.style.setProperty('--line-width', `${progress * 100}%`);
+                    }
+                });
+            },
+            onLeaveBack: () => {
+                gsap.to(stat, {
+                    '--line-width': '0%',
+                    duration: 0.8,
+                    ease: "power2.in",
+                    onUpdate: function() {
+                        const progress = 1 - this.progress();
+                        stat.style.setProperty('--line-width', `${progress * 100}%`);
+                    }
+                });
+            }
+        });
+    });
+}
+
+// Smooth scrolling enhancement with GSAP
+gsap.registerPlugin(ScrollTrigger);
+
+// Button hover animations
+gsap.utils.toArray(".btn, .header-cta, .footer-cta-btn").forEach(button => {
+    button.addEventListener("mouseenter", () => {
+        gsap.to(button, {
+            scale: 1.05,
+            duration: 0.3,
+            ease: "power2.out"
+        });
+    });
+    
+    button.addEventListener("mouseleave", () => {
+        gsap.to(button, {
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out"
+        });
+    });
+});
+
+// =====================================
+// CARD SYSTEM - CLEAN (NO ANIMATIONS)
+// =====================================
+
+// Footer card component - clean state, no interactions
+
+// Enhanced button hover animations with magnetic effect
+gsap.utils.toArray(".footer-blue-arrow").forEach(arrow => {
+    arrow.addEventListener("mouseenter", () => {
+        gsap.to(arrow, {
+            scale: 1.1,
+            rotation: 15,
+            duration: 0.4,
+            ease: "back.out(1.7)"
+        });
+    });
+    
+    arrow.addEventListener("mouseleave", () => {
+        gsap.to(arrow, {
+            scale: 1,
+            rotation: 0,
+            duration: 0.4,
+            ease: "power2.out"
+        });
+    });
+    
+    // Magnetic effect
+    arrow.addEventListener("mousemove", (e) => {
+        const rect = arrow.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const deltaX = (e.clientX - centerX) * 0.2;
+        const deltaY = (e.clientY - centerY) * 0.2;
+        
+        gsap.to(arrow, {
+            x: deltaX,
+            y: deltaY,
+            duration: 0.3,
+            ease: "power2.out"
+        });
+    });
+    
+    arrow.addEventListener("mouseleave", () => {
+        gsap.to(arrow, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.5)"
+        });
+    });
+});
+
+// ========================================
+// Social Proof Bar - Scroll-based Diagonal Animation
+// ========================================
+gsap.registerPlugin(ScrollTrigger);
+
+// Animate logo rows on scroll - horizontal movement transformed by CSS 3D rotation
+if (document.querySelector('.social-proof-bar')) {
+    const logoRows = gsap.utils.toArray('.logo-row');
+    
+    logoRows.forEach((row, index) => {
+        // Alternate direction: even rows move right, odd rows move left
+        // The CSS 3D transform will make this appear diagonal
+        const direction = index % 2 === 0 ? 1 : -1;
+        const distance = 300; // Horizontal movement distance
+        
+        gsap.to(row, {
+            x: direction * distance, // Pure horizontal movement
+            ease: "none",
+            scrollTrigger: {
+                trigger: '.social-proof-bar',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.5, // Smooth scrubbing (higher = more lag/smoothness)
+                // markers: true, // Uncomment to debug
+            }
+        });
+    });
+    
+    // Staggered entrance animation for content and button
+    const socialProofSubtitle = document.querySelector('.social-proof-subtitle');
+    const socialProofTitle = document.querySelector('.social-proof-title');
+    const socialProofButton = document.querySelector('.social-proof-bar .footer-cta-button');
+    
+    if (socialProofSubtitle || socialProofTitle || socialProofButton) {
+        // Set initial states
+        gsap.set([socialProofSubtitle, socialProofTitle, socialProofButton], {
+            y: 40,
+            opacity: 0
+        });
+        
+        // Create paused timeline for stagger animation
+        const socialProofTimeline = gsap.timeline({ paused: true });
+        
+        // Build timeline with to() animations
+        if (socialProofSubtitle) {
+            socialProofTimeline.to(socialProofSubtitle, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+            }, 0);
+        }
+        
+        if (socialProofTitle) {
+            socialProofTimeline.to(socialProofTitle, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+            }, 0.2); // Slight overlap with subtitle
+        }
+        
+        if (socialProofButton) {
+            socialProofTimeline.to(socialProofButton, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out'
+            }, 0.5); // Stagger after title
+        }
+        
+        // Create ScrollTrigger with reverse capability
+        ScrollTrigger.create({
+            trigger: '.social-proof-bar',
+            start: 'top 85%',
+            end: 'bottom 15%',
+            onEnter: () => socialProofTimeline.play(),
+            onLeave: () => socialProofTimeline.reverse(),
+            onEnterBack: () => socialProofTimeline.play(),
+            onLeaveBack: () => socialProofTimeline.reverse()
+        });
+    }
+}
+
+// ========================================
+// How It Works - Animated Steps with S-Curve Connectors
+// ========================================
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+// Initialize DrawSVG for the connector paths - set initial state to 0% drawn
+gsap.set('.how-it-works-connector path', {
+    drawSVG: '0% 0%'
+});
+
+// Set initial state for step description paragraphs
+gsap.set('.how-it-works-step-description', {
+    opacity: 0,
+    y: 30
+});
+
+// Create timeline for the How It Works animation
+const howItWorksTimeline = gsap.timeline({
+    scrollTrigger: {
+        trigger: '.how-it-works-steps',
+        start: 'top 70%',
+        end: () => {
+            const step3 = document.querySelector('.how-it-works-step.step-3');
+            if (step3) {
+                const step3Top = step3.offsetTop + step3.offsetHeight / 2;
+                return `${step3Top}px 30%`;
+            }
+            return 'bottom 30%';
+        },
+        scrub: 1.5,
+        toggleActions: 'play reverse play reverse'
+    }
+});
+
+// Step 1: Multi-stage animation
+// Stage 1: Card container fades in and moves up
+howItWorksTimeline.to('.how-it-works-step.step-1', {
+    opacity: 1,
+    y: 0,
+    duration: 0.6,
+    ease: 'power3.out'
+}, 0);
+
+// Stage 2: Border stroke draws clockwise (overlaps at 0.3s)
+howItWorksTimeline.to('.step-1 .how-it-works-step-border-path', {
+    strokeDashoffset: 0,
+    duration: 0.7,
+    ease: 'power2.inOut'
+}, 0.3);
+
+// Stage 3: Background fades in (overlaps at 0.7s)
+howItWorksTimeline.to('.how-it-works-step.step-1', {
+    backgroundColor: '#fffef8',
+    duration: 0.4,
+    ease: 'power2.out'
+}, 0.7);
+
+// Stage 4: Content fades in (overlaps at 0.9s)
+howItWorksTimeline.to('.step-1 .how-it-works-step-content', {
+    opacity: 1,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 0.9);
+
+// Stage 5: Paragraph fade in and up animation
+howItWorksTimeline.fromTo('.step-1 .how-it-works-step-description', {
+    opacity: 0,
+    y: 10
+}, {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 1.1);
+
+// First S-curve connector draws (with +2s delay)
+howItWorksTimeline.to('.connector-1 path', {
+    opacity: 1,
+    drawSVG: '0% 100%',
+    duration: 1,
+    ease: 'power2.inOut'
+}, 2.4);
+
+// End cap 1 - Flashy pop animation
+howItWorksTimeline.fromTo('.end-cap-1', {
+    opacity: 0,
+    scale: 0
+}, {
+    opacity: 1,
+    scale: 1,
+    duration: 0.4,
+    ease: 'back.out(3)',
+    transformOrigin: 'center center'
+}, 3.3);
+
+// Sparks 1 - Subtle burst effect
+howItWorksTimeline.to('.spark-1-1', {
+    opacity: 1,
+    x: -12,
+    y: -12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 3.3);
+
+howItWorksTimeline.to('.spark-1-2', {
+    opacity: 1,
+    x: 12,
+    y: -12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 3.3);
+
+howItWorksTimeline.to('.spark-1-3', {
+    opacity: 1,
+    x: -12,
+    y: 12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 3.3);
+
+howItWorksTimeline.to('.spark-1-4', {
+    opacity: 1,
+    x: 12,
+    y: 12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 3.3);
+
+// Fade out sparks
+howItWorksTimeline.to(['.spark-1-1', '.spark-1-2', '.spark-1-3', '.spark-1-4'], {
+    opacity: 0,
+    duration: 0.3
+}, 3.6);
+
+// Step 2: Multi-stage animation
+// Stage 1: Card container fades in and moves up
+howItWorksTimeline.to('.how-it-works-step.step-2', {
+    opacity: 1,
+    y: 0,
+    duration: 0.6,
+    ease: 'power3.out'
+}, 1.1);
+
+// Stage 2: Border stroke draws clockwise
+howItWorksTimeline.to('.step-2 .how-it-works-step-border-path', {
+    strokeDashoffset: 0,
+    duration: 0.7,
+    ease: 'power2.inOut'
+}, 1.4);
+
+// Stage 3: Background fades in
+howItWorksTimeline.to('.how-it-works-step.step-2', {
+    backgroundColor: '#fffef8',
+    duration: 0.4,
+    ease: 'power2.out'
+}, 1.8);
+
+// Stage 4: Content fades in
+howItWorksTimeline.to('.step-2 .how-it-works-step-content', {
+    opacity: 1,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 2.0);
+
+// Stage 4.5: Paragraph fade in and up animation
+howItWorksTimeline.fromTo('.step-2 .how-it-works-step-description', {
+    opacity: 0,
+    y: 10
+}, {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 2.2);
+
+// Stage 5: Shadow fades in (final touch) - animate opacity via CSS variable
+howItWorksTimeline.to('.how-it-works-step.step-2', {
+    '--shadow-opacity': 1,
+    duration: 0.6,
+    ease: 'power2.out'
+}, 2.3);
+
+// Stage 5: Shadow fades in (final touch) - animate opacity via CSS variable
+howItWorksTimeline.to('.how-it-works-step.step-1', {
+    '--shadow-opacity': 1,
+    duration: 0.6,
+    ease: 'power2.out'
+}, 0.6);
+
+// Second S-curve connector draws (with +2s delay)
+howItWorksTimeline.to('.connector-2 path', {
+    opacity: 1,
+    drawSVG: '0% 100%',
+    duration: 1,
+    ease: 'power2.inOut'
+}, 3.6);
+
+// End cap 2 - Flashy pop animation
+howItWorksTimeline.fromTo('.end-cap-2', {
+    opacity: 0,
+    scale: 0
+}, {
+    opacity: 1,
+    scale: 1,
+    duration: 0.4,
+    ease: 'back.out(3)',
+    transformOrigin: 'center center'
+}, 4.5);
+
+// Sparks 2 - Subtle burst effect
+howItWorksTimeline.to('.spark-2-1', {
+    opacity: 1,
+    x: -12,
+    y: -12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 4.5);
+
+howItWorksTimeline.to('.spark-2-2', {
+    opacity: 1,
+    x: 12,
+    y: -12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 4.5);
+
+howItWorksTimeline.to('.spark-2-3', {
+    opacity: 1,
+    x: -12,
+    y: 12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 4.5);
+
+howItWorksTimeline.to('.spark-2-4', {
+    opacity: 1,
+    x: 12,
+    y: 12,
+    scale: 0.5,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 4.5);
+
+// Fade out sparks
+howItWorksTimeline.to(['.spark-2-1', '.spark-2-2', '.spark-2-3', '.spark-2-4'], {
+    opacity: 0,
+    duration: 0.3
+}, 4.8);
+
+// Step 3: Multi-stage animation
+// Stage 1: Card container fades in and moves up
+howItWorksTimeline.to('.how-it-works-step.step-3', {
+    opacity: 1,
+    y: 0,
+    duration: 0.6,
+    ease: 'power3.out'
+}, 2.7);
+
+// Stage 2: Border stroke draws clockwise
+howItWorksTimeline.to('.step-3 .how-it-works-step-border-path', {
+    strokeDashoffset: 0,
+    duration: 0.7,
+    ease: 'power2.inOut'
+}, 3.0);
+
+// Stage 3: Background fades in
+howItWorksTimeline.to('.how-it-works-step.step-3', {
+    backgroundColor: '#fffef8',
+    duration: 0.4,
+    ease: 'power2.out'
+}, 3.4);
+
+// Stage 4: Content fades in
+howItWorksTimeline.to('.step-3 .how-it-works-step-content', {
+    opacity: 1,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 3.6);
+
+// Stage 4.5: Paragraph fade in and up animation
+howItWorksTimeline.fromTo('.step-3 .how-it-works-step-description', {
+    opacity: 0,
+    y: 10
+}, {
+    opacity: 1,
+    y: 0,
+    duration: 0.5,
+    ease: 'power2.out'
+}, 3.8);
+
+// Stage 5: Shadow fades in (final touch) - animate opacity via CSS variable
+howItWorksTimeline.to('.how-it-works-step.step-3', {
+    '--shadow-opacity': 1,
+    duration: 0.6,
+    ease: 'power2.out'
+}, 3.9);
+
+// ========================================
+// Physics-based String Animation for Connectors
+// ========================================
+let scrollVelocity = 0;
+let lastScrollY = window.scrollY;
+let animationFrame;
+let jiggleOffset = 0;
+let jiggleVelocity = 0;
+
+// Function to apply string physics to connectors
+function applyStringPhysics() {
+    const connectors = document.querySelectorAll('.how-it-works-connector path');
+    const currentScrollY = window.scrollY;
+    
+    // Calculate scroll velocity - balanced for Lenis smooth scroll
+    const newVelocity = (currentScrollY - lastScrollY) * 1.5; // Moderate multiplier
+    const velocityChange = Math.abs(newVelocity - scrollVelocity);
+    scrollVelocity = newVelocity;
+    lastScrollY = currentScrollY;
+    
+    // Add jiggle based on velocity changes - moderate response
+    jiggleVelocity += velocityChange * 1.5; // Balanced responsiveness
+    
+    // Update jiggle with spring physics - high damping for minimal bounces
+    const jiggleSpring = -jiggleOffset * 0.15; // Stiffer spring
+    const jiggleDamping = -jiggleVelocity * 0.35; // High damping to settle quickly
+    jiggleVelocity += jiggleSpring + jiggleDamping;
+    jiggleOffset += jiggleVelocity;
+    
+    // Clamp jiggle to prevent extreme values
+    jiggleOffset = Math.max(-25, Math.min(25, jiggleOffset)); // Moderate range
+    
+    // Apply physics to each connector path
+    connectors.forEach((path, index) => {
+        // Only apply physics if the connector has been drawn (opacity > 0)
+        const pathOpacity = parseFloat(window.getComputedStyle(path).opacity);
+        
+        if (pathOpacity > 0) {
+            // Calculate bend amount - balanced visibility
+            const bendAmount = Math.min(Math.abs(scrollVelocity) * 0.8, 22); // Moderate multiplier and cap
+            const direction = scrollVelocity > 0 ? 1 : -1;
+            
+            // Add jiggle to create dynamic curve variation - balanced effect
+            const jiggleFactor = Math.sin(Date.now() * 0.012) * Math.abs(jiggleOffset) * 0.45; // Moderate factor
+            
+            // Apply bend with elastic spring effect
+            gsap.to(path, {
+                attr: {
+                    // Modify the path's control points to create a bend with jiggle
+                    'd': getBentPath(path, bendAmount * direction, index, jiggleOffset, jiggleFactor)
+                },
+                duration: 0.18, // Balanced response time
+                ease: 'power1.out',
+                overwrite: 'auto'
+            });
+        }
+    });
+    
+    // Gradually reduce velocity (friction) - balanced decay
+    scrollVelocity *= 0.86; // Moderate friction
+    jiggleVelocity *= 0.93; // Moderate damping
+    
+    // Continue animation loop if there's still movement
+    if (Math.abs(scrollVelocity) > 0.08 || Math.abs(jiggleOffset) > 0.4 || Math.abs(jiggleVelocity) > 0.08) {
+        animationFrame = requestAnimationFrame(applyStringPhysics);
+    }
+}
+
+// Function to calculate bent path with jiggle
+function getBentPath(path, bendAmount, connectorIndex, jiggleOffset, jiggleFactor) {
+    // Get original path data
+    const originalPath = path.getAttribute('data-original-path');
+    if (!originalPath) {
+        // Store original path on first run
+        path.setAttribute('data-original-path', path.getAttribute('d'));
+        return path.getAttribute('d');
+    }
+    
+    // Add jiggle to control points for dynamic curve variation
+    const jiggle1 = jiggleOffset * 0.6 + jiggleFactor;
+    const jiggle2 = jiggleOffset * -0.4 + jiggleFactor * -0.8;
+    
+    // Connector 1: "M 0 226.5 C 0 340, 128 340, 128 453"
+    // Connector 2: "M 0 453 C 0 340, 128 340, 128 226.5"
+    
+    if (connectorIndex === 0) {
+        // First connector - bend the middle control points with variable curve
+        const cp1x = bendAmount + jiggle1;
+        const cp1y = 340 + jiggle2;
+        const cp2x = 128 + bendAmount + jiggle2;
+        const cp2y = 340 - jiggle1;
+        return `M 0 226.5 C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, 128 453`;
+    } else if (connectorIndex === 1) {
+        // Second connector - bend the middle control points with variable curve
+        const cp1x = bendAmount + jiggle1;
+        const cp1y = 340 + jiggle2;
+        const cp2x = 128 + bendAmount + jiggle2;
+        const cp2y = 340 - jiggle1;
+        return `M 0 453 C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, 128 226.5`;
+    }
+    
+    return originalPath;
+}
+
+// Listen to scroll events with throttling
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    // Cancel any existing animation frame
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+    }
+    
+    // Start physics animation
+    animationFrame = requestAnimationFrame(applyStringPhysics);
+    
+    // Clear timeout
+    clearTimeout(scrollTimeout);
+    
+    // Stop animation after scrolling stops
+    scrollTimeout = setTimeout(() => {
+        // Return to original paths smoothly
+        const connectors = document.querySelectorAll('.how-it-works-connector path');
+        connectors.forEach((path, index) => {
+            const originalPath = path.getAttribute('data-original-path');
+            if (originalPath) {
+                gsap.to(path, {
+                    attr: { 'd': originalPath },
+                    duration: 0.8,
+                    ease: 'elastic.out(1, 0.3)'
+                });
+            }
+        });
+    }, 200);
+}, { passive: true });
+
+// Success Stories Carousel
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.querySelector('.carousel-track');
+    const prevBtn = document.getElementById('stories-prev');
+    const nextBtn = document.getElementById('stories-next');
+    const cards = document.querySelectorAll('.success-card');
+    
+    if (track && prevBtn && nextBtn && cards.length > 0) {
+        let currentIndex = 0;
+        const totalCards = cards.length;
+        
+        // Calculate card width including gap
+        function getCardWidth() {
+            return cards[0].offsetWidth + 20; // 20px gap
+        }
+        
+        function updateCarousel() {
+            const cardWidth = getCardWidth();
+            const offset = -currentIndex * cardWidth;
+            
+            gsap.to(track, {
+                x: offset,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+            
+            // Update button states and active class
+            if (currentIndex === 0) {
+                prevBtn.classList.remove('active');
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.classList.add('active');
+                prevBtn.disabled = false;
+            }
+            
+            if (currentIndex === totalCards - 1) {
+                nextBtn.classList.remove('active');
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.classList.add('active');
+                nextBtn.disabled = false;
+            }
+        }
+        
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < totalCards - 1) {
+                currentIndex++;
+                updateCarousel();
+            }
+        });
+        
+        // Initialize
+        updateCarousel();
+        
+        // Handle window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                updateCarousel();
+            }, 200);
+        });
+    }
+});
+
+// RPM Difference - Award-Winning Word Fill Scroll Animation
+document.addEventListener('DOMContentLoaded', function() {
+    const textElement = document.getElementById('rpm-scroll-text');
+    
+    if (!textElement) return;
+    
+    // Get the original text
+    const originalText = textElement.textContent;
+    
+    // Clear the element
+    textElement.innerHTML = '';
+    
+    // Split text into words and wrap each in a span
+    const words = originalText.split(' ');
+    const wordSpans = [];
+    
+    words.forEach((word, index) => {
+        const span = document.createElement('span');
+        span.className = 'char'; // Keep same class for styling
+        span.textContent = word;
+        
+        textElement.appendChild(span);
+        wordSpans.push(span);
+        
+        // Add space after each word except the last one
+        if (index < words.length - 1) {
+            const space = document.createElement('span');
+            space.className = 'space';
+            space.innerHTML = '&nbsp;';
+            textElement.appendChild(space);
+        }
+    });
+    
+    // Create the scroll-triggered animation with scrub
+    gsap.to(wordSpans, {
+        color: '#181d27',
+        duration: 0.1,
+        stagger: {
+            each: 0.05,
+            from: "start"
+        },
+        ease: "none",
+        scrollTrigger: {
+            trigger: textElement,
+            start: "top 80%",
+            end: "bottom 30%",
+            scrub: 1.5, // Smooth scrubbing - linked to scroll position
+            toggleActions: "play none none reverse",
+            // markers: true // Uncomment to debug
+        }
+    });
+    
+    // Optional: Add a subtle scale effect for even more polish
+    gsap.to(wordSpans, {
+        scale: 1,
+        duration: 0.1,
+        stagger: {
+            each: 0.05,
+            from: "start"
+        },
+        ease: "power1.out",
+        scrollTrigger: {
+            trigger: textElement,
+            start: "top 80%",
+            end: "bottom 30%",
+            scrub: 2,
+            toggleActions: "play none none reverse"
+        }
+    });
+});
+
+// Audit Reviews Accordion with Auto-Timer
+document.addEventListener('DOMContentLoaded', function() {
+    const accordionItems = document.querySelectorAll('[data-accordion-item]');
+    
+    if (!accordionItems.length) return;
+    
+    let currentIndex = 0;
+    let autoTimerInterval = null;
+    let isAnimating = false;
+    const AUTO_TIMER_DURATION = 7000; // 7 seconds auto-timer
+    const ANIMATION_DURATION = 400; // Faster animation - 0.4s
+    
+    // Function to activate a specific accordion item
+    async function activateItem(index) {
+        // Prevent overlapping animations
+        if (isAnimating) return;
+        
+        isAnimating = true;
+        
+        // Step 1: Close currently active item
+        const currentItem = accordionItems[currentIndex];
+        if (currentItem && currentIndex !== index) {
+            currentItem.classList.remove('active');
+            // Wait for close animation to complete
+            await new Promise(resolve => setTimeout(resolve, ANIMATION_DURATION));
+        }
+        
+        // Step 2: Open new item
+        accordionItems.forEach((item, i) => {
+            if (i === index) {
+                // Force reflow to restart animation
+                void item.offsetWidth;
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        currentIndex = index;
+        
+        // Animation complete
+        setTimeout(() => {
+            isAnimating = false;
+        }, ANIMATION_DURATION);
+    }
+    
+    // Function to go to next item
+    function nextItem() {
+        const nextIndex = (currentIndex + 1) % accordionItems.length;
+        activateItem(nextIndex);
+    }
+    
+    // Start auto-timer
+    function startAutoTimer() {
+        // Clear any existing timer
+        if (autoTimerInterval) {
+            clearInterval(autoTimerInterval);
+        }
+        
+        // Set interval to match progress bar duration
+        autoTimerInterval = setInterval(nextItem, AUTO_TIMER_DURATION);
+    }
+    
+    // Stop auto-timer
+    function stopAutoTimer() {
+        if (autoTimerInterval) {
+            clearInterval(autoTimerInterval);
+            autoTimerInterval = null;
+        }
+    }
+    
+    // Manual click handling
+    accordionItems.forEach((item, index) => {
+        const trigger = item.querySelector('[data-accordion-trigger]');
+        
+        trigger.addEventListener('click', function() {
+            // Prevent clicks during animation
+            if (isAnimating) return;
+            
+            // Stop auto-timer when user manually clicks
+            stopAutoTimer();
+            
+            // Activate clicked item
+            activateItem(index);
+            
+            // Restart auto-timer after manual interaction
+            setTimeout(() => {
+                startAutoTimer();
+            }, AUTO_TIMER_DURATION);
+        });
+    });
+    
+    // Initialize: activate first item and start timer
+    activateItem(0);
+    startAutoTimer();
+});
+
+// Pay-As-You-Go Carousel
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.querySelector('.pay-as-you-go-carousel-track');
+    const prevBtn = document.getElementById('paygo-prev');
+    const nextBtn = document.getElementById('paygo-next');
+    const cards = document.querySelectorAll('.pay-as-you-go-card');
+    
+    if (!track || !prevBtn || !nextBtn || cards.length === 0) return;
+    
+    let hoverEnabled = false; // Disable hover until animation completes
+    
+    // Disable CSS hover effects initially by adding a class
+    cards.forEach(card => {
+        const cardImage = card.querySelector('.pay-as-you-go-card-image');
+        if (cardImage) {
+            cardImage.classList.add('hover-disabled');
+        }
+    });
+    
+    let currentIndex = 0;
+    const cardWidth = 450; // Card width
+    const gap = 20; // Gap between cards
+    const cardsToShow = 3; // Number of visible cards
+    const maxIndex = Math.max(0, cards.length - cardsToShow);
+    
+    function updateCarousel() {
+        const offset = -currentIndex * (cardWidth + gap);
+        gsap.to(track, {
+            x: offset,
+            duration: 0.2,
+            ease: "power3.out"
+        });
+        
+        // Update button states
+        prevBtn.classList.toggle('active', currentIndex > 0);
+        prevBtn.disabled = currentIndex === 0;
+        
+        nextBtn.classList.toggle('active', currentIndex < maxIndex);
+        nextBtn.disabled = currentIndex >= maxIndex;
+    }
+    
+    prevBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        if (currentIndex < maxIndex) {
+            currentIndex++;
+            updateCarousel();
+        }
+    });
+    
+    // Initialize
+    updateCarousel();
+    
+    // Hide card content initially and set lighter backgrounds for stacked cards
+    cards.forEach((card, index) => {
+        const content = card.querySelector('.pay-as-you-go-card-content');
+        const cardImage = card.querySelector('.pay-as-you-go-card-image');
+        
+        if (content) {
+            gsap.set(content, { opacity: 0, y: 20 });
+        }
+        
+        // Set progressively lighter background colors for all cards
+        if (cardImage) {
+            if (index === 0) {
+                cardImage.style.backgroundColor = 'rgba(15, 70, 211, 1)'; // Custom color for first card when stacked
+            } else if (index === 1) {
+                cardImage.style.backgroundColor = '#255debff'; // Lighter shade for card 2
+            } else if (index === 2) {
+                cardImage.style.backgroundColor = '#478dfdff'; // Even lighter shade for card 3
+            } else if (index === 3) {
+                cardImage.style.backgroundColor = '#71a5f8ff'; // Card 4
+            } else if (index === 4) {
+                cardImage.style.backgroundColor = '#6AA3FF'; // Card 5
+            } else if (index === 5) {
+                cardImage.style.backgroundColor = '#BFD8FF'; // Card 6 - lightest
+            }
+        }
+    });
+    
+    // Entrance Animation on Viewport Enter - Stacked cards that spread out
+    gsap.set(cards, {
+        opacity: 0,
+        x: (index) => {
+            // Calculate center position
+            const trackWidth = track.offsetWidth;
+            const centerX = trackWidth / 2 - cardWidth / 2;
+            return centerX - (index * (cardWidth + gap));
+        },
+        y: 60,
+        scale: 0.95,
+        rotation: (index) => {
+            // Only rotate first 3 cards: 1st centered (0°), 2nd left (-5°), 3rd right (5°)
+            if (index === 0) return 0;        // First card - centered
+            if (index === 1) return -5;       // Second card - rotated left
+            if (index === 2) return 5;        // Third card - rotated right
+            return 0;                         // All other cards - no rotation
+        },
+        zIndex: (index) => cards.length - index
+    });
+    
+    // Phase 1: Cards enter stacked
+    ScrollTrigger.create({
+        trigger: '.pay-as-you-go-carousel',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+            gsap.to(cards, {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.6,
+                stagger: 0.05,
+                ease: "power2.out"
+            });
+        }
+    });
+    
+    // Phase 2: Cards fan out when reaching 40% of screen
+    ScrollTrigger.create({
+        trigger: '.pay-as-you-go-carousel',
+        start: 'top 40%',
+        once: true,
+        onEnter: () => {
+            // Fan out cards and animate background colors back to original
+            gsap.to(cards, {
+                x: 0,
+                rotation: 0,
+                duration: 0.8,
+                stagger: 0.08,
+                ease: "power3.inOut",
+                clearProps: "x,y,scale,zIndex"
+            });
+            
+            // Animate card backgrounds back to original color
+            cards.forEach((card, index) => {
+                const cardImage = card.querySelector('.pay-as-you-go-card-image');
+                if (cardImage && index >= 0) { // Animate all cards including the first one
+                    gsap.to(cardImage, {
+                        backgroundColor: '#011F8B', // Original color
+                        duration: 0.8,
+                        ease: "power3.inOut"
+                    });
+                }
+            });
+            
+            // Phase 3: Start glow trail early - right after fan-out begins
+            setTimeout(() => {
+                const cardImages = Array.from(cards).map(card => card.querySelector('.pay-as-you-go-card-image')).filter(img => img);
+                
+                // Create a staggered timeline for the glow trail with world-class ease
+                cardImages.forEach((cardImage, index) => {
+                    const glowTimeline = gsap.timeline({ delay: index * 0.12 });
+                    
+                    glowTimeline
+                        .to(cardImage, {
+                            boxShadow: '0 0 12.3px -1px #EAF2FF inset, 0 0 60px -10px #6AA3FF inset, 0 0 60px 18px #005AEA inset',
+                            duration: 0.5,
+                            ease: "circ.out" // Circular ease - elegant and smooth
+                        })
+                        .to(cardImage, {
+                            boxShadow: '',
+                            duration: 0.6,
+                            ease: "sine.inOut" // Sine wave - natural and flowing
+                        }, "+=0.15");
+                });
+            }, 600); // Start with a bit more delay for better timing
+            
+            // Phase 4: Reveal card content after fan out completes with stagger
+            setTimeout(() => {
+                const contents = Array.from(cards).map(card => card.querySelector('.pay-as-you-go-card-content')).filter(c => c);
+                
+                // Create timeline for reversible animation
+                const contentTimeline = gsap.timeline({ paused: true });
+                contentTimeline.to(contents, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    stagger: 0.1,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        // Enable hover effects after all animations complete
+                        setTimeout(() => {
+                            hoverEnabled = true;
+                            // Remove hover-disabled class to enable CSS hover effects
+                            cards.forEach(card => {
+                                const cardImage = card.querySelector('.pay-as-you-go-card-image');
+                                if (cardImage) {
+                                    cardImage.classList.remove('hover-disabled');
+                                }
+                            });
+                        }, 200); // Small delay after content reveals
+                    },
+                    onReverseComplete: () => {
+                        // Disable hover effects when animation reverses
+                        hoverEnabled = false;
+                        cards.forEach(card => {
+                            const cardImage = card.querySelector('.pay-as-you-go-card-image');
+                            if (cardImage) {
+                                cardImage.classList.add('hover-disabled');
+                            }
+                        });
+                    }
+                });
+                
+                // Create ScrollTrigger with reverse capability
+                ScrollTrigger.create({
+                    trigger: '.pay-as-you-go-carousel',
+                    start: 'top 40%',
+                    end: 'bottom 15%',
+                    onEnter: () => contentTimeline.play(),
+                    onLeave: () => contentTimeline.reverse(),
+                    onEnterBack: () => contentTimeline.play(),
+                    onLeaveBack: () => contentTimeline.reverse()
+                });
+            }, 800); // Wait for fan-out to complete
+        }
+    });
+    
+    // 3D Mouse-tracking Shadow Effect for Cards
+    cards.forEach(card => {
+        const cardImage = card.querySelector('.pay-as-you-go-card-image');
+        if (!cardImage) return;
+        
+        // Create SVG overlay for perspective lines
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'card-perspective-lines');
+        svg.style.position = 'absolute';
+        svg.style.top = '0';
+        svg.style.left = '0';
+        svg.style.width = '100%';
+        svg.style.height = '100%';
+        svg.style.pointerEvents = 'none';
+        svg.style.opacity = '0';
+        svg.style.transition = 'opacity 0.3s ease';
+        cardImage.appendChild(svg);
+        
+        // Create defs for gradients
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        svg.appendChild(defs);
+        
+        // Create perspective line paths with gradients (16 lines)
+        const lines = [];
+        const cardId = Math.random().toString(36).substr(2, 9); // Unique ID for this card
+        for (let i = 0; i < 16; i++) {
+            // Create gradient for each line
+            const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+            gradient.setAttribute('id', `line-gradient-${cardId}-${i}`);
+            gradient.setAttribute('gradientUnits', 'userSpaceOnUse');
+            
+            const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+            stop1.setAttribute('offset', '0%');
+            stop1.setAttribute('style', 'stop-color:rgba(186, 234, 255, 0.25); stop-opacity:1');
+            
+            const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+            stop2.setAttribute('offset', '100%');
+            stop2.setAttribute('style', 'stop-color:rgba(186, 234, 255, 0); stop-opacity:0');
+            
+            gradient.appendChild(stop1);
+            gradient.appendChild(stop2);
+            defs.appendChild(gradient);
+            
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('stroke', `url(#line-gradient-${cardId}-${i})`);
+            line.setAttribute('stroke-width', '1');
+            svg.appendChild(line);
+            lines.push({ element: line, gradient: gradient });
+        }
+        
+        cardImage.addEventListener('mouseenter', function() {
+            if (!hoverEnabled) return; // Skip if animation hasn't completed
+            cardImage.style.transition = 'none'; // Disable transition for smooth mouse tracking
+            svg.style.opacity = '1';
+        });
+        
+        cardImage.addEventListener('mousemove', function(e) {
+            if (!hoverEnabled) return; // Skip if animation hasn't completed
+            const rect = cardImage.getBoundingClientRect();
+            const x = e.clientX - rect.left; // Mouse X relative to card image
+            const y = e.clientY - rect.top;  // Mouse Y relative to card image
+            
+            // Calculate position as percentage (0 to 1)
+            const xPercent = x / rect.width;
+            const yPercent = y / rect.height;
+            
+            // Calculate distance from center (-1 to 1 range for better effect)
+            const xFromCenter = (xPercent - 0.5) * 2;
+            const yFromCenter = (yPercent - 0.5) * 2;
+            
+            // 3D depth simulation parameters
+            const depthIntensity = 25; // How much the shadow shifts
+            const spreadVariation = 25; // How much the spread changes
+            
+            // When viewing from an angle, you see MORE of the opposite side
+            // Mouse at top-left = see more of bottom-right "wall"
+            const shadowX = xFromCenter * depthIntensity;
+            const shadowY = yFromCenter * depthIntensity;
+            
+            // Spread increases on the side you're looking "into"
+            const spread = 18 + (Math.abs(xFromCenter) + Math.abs(yFromCenter)) * spreadVariation;
+            
+            // Apply dynamic box-shadow with 3D depth effect
+            // The deep shadow appears on the opposite side from viewing angle
+            cardImage.style.boxShadow = `
+                0 0 12.3px -1px var(--color-brand-25, #EAF2FF) inset,
+                ${shadowX * 0.5}px ${shadowY * 0.5}px 60px -10px var(--color-brand-200, #6AA3FF) inset,
+                ${shadowX}px ${shadowY}px 70px ${spread}px var(--color-brand-500, #005AEA) inset
+            `;
+            
+            // Update perspective lines
+            const width = rect.width;
+            const height = rect.height;
+            
+            // Vanishing point is offset in the direction of mouse movement
+            // This creates the illusion of looking "into" the box
+            const vanishX = xPercent * width;
+            const vanishY = yPercent * height;
+            
+            // Depth factor - how far "into" the box the lines converge
+            const depthFactor = 0.3; // 30% toward center from mouse
+            const convergenceX = vanishX + (width * 0.5 - vanishX) * depthFactor;
+            const convergenceY = vanishY + (height * 0.5 - vanishY) * depthFactor;
+            
+            // Draw lines from edges to vanishing point (16 lines total)
+            const points = [
+                // Corners
+                { x: 0, y: 0 },                    // Top-left corner
+                { x: width, y: 0 },                // Top-right corner
+                { x: width, y: height },           // Bottom-right corner
+                { x: 0, y: height },               // Bottom-left corner
+                // Edge midpoints
+                { x: width * 0.5, y: 0 },          // Top-middle
+                { x: width, y: height * 0.5 },     // Right-middle
+                { x: width * 0.5, y: height },     // Bottom-middle
+                { x: 0, y: height * 0.5 },         // Left-middle
+                // Additional points for more lines
+                { x: width * 0.25, y: 0 },         // Top-quarter left
+                { x: width * 0.75, y: 0 },         // Top-quarter right
+                { x: width, y: height * 0.25 },    // Right-quarter top
+                { x: width, y: height * 0.75 },    // Right-quarter bottom
+                { x: width * 0.75, y: height },    // Bottom-quarter right
+                { x: width * 0.25, y: height },    // Bottom-quarter left
+                { x: 0, y: height * 0.75 },        // Left-quarter bottom
+                { x: 0, y: height * 0.25 }         // Left-quarter top
+            ];
+            
+            points.forEach((point, i) => {
+                const line = lines[i];
+                
+                // Calculate the direction vector from edge to convergence
+                const dx = convergenceX - point.x;
+                const dy = convergenceY - point.y;
+                
+                // Stop the line at 40% of the distance
+                const stopPercent = 0.3;
+                const x2 = point.x + (dx * stopPercent);
+                const y2 = point.y + (dy * stopPercent);
+                
+                line.element.setAttribute('x1', point.x);
+                line.element.setAttribute('y1', point.y);
+                line.element.setAttribute('x2', x2);
+                line.element.setAttribute('y2', y2);
+                
+                // Update gradient coordinates to fade along the shortened line
+                line.gradient.setAttribute('x1', point.x);
+                line.gradient.setAttribute('y1', point.y);
+                line.gradient.setAttribute('x2', x2);
+                line.gradient.setAttribute('y2', y2);
+            });
+        });
+        
+        cardImage.addEventListener('mouseleave', function() {
+            if (!hoverEnabled) return; // Skip if animation hasn't completed
+            // Reset to default hover shadow with transition
+            cardImage.style.transition = 'box-shadow 0.3s ease';
+            cardImage.style.boxShadow = '';
+            svg.style.opacity = '0';
+        });
+    });
+});
+
+// =====================================
+// AUDIT REVIEWS LOGO ROTATION ON SCRUB
+// =====================================
+document.addEventListener('DOMContentLoaded', function() {
+    const auditLogo = document.querySelector('.audit-reviews-logo');
+    const auditSection = document.querySelector('.audit-reviews');
+    
+    if (!auditLogo || !auditSection) return;
+    
+    // Set initial state
+    gsap.set(auditLogo, {
+        transformOrigin: 'center center'
+    });
+    
+    let baseRotation = 0;
+    let autoRotationTween = null;
+    let lastProgress = 0;
+    let isScrolling = false;
+    let scrollTimeout;
+    
+    // Start gentle auto-rotation
+    function startAutoRotation() {
+        // Get current rotation and continue from there
+        const currentRotation = gsap.getProperty(auditLogo, 'rotation');
+        baseRotation = currentRotation;
+        
+        if (autoRotationTween) {
+            autoRotationTween.kill();
+        }
+        
+        autoRotationTween = gsap.to(auditLogo, {
+            rotation: baseRotation + 360,
+            duration: 20,
+            ease: 'none',
+            repeat: -1,
+            modifiers: {
+                rotation: (rotation) => {
+                    baseRotation = parseFloat(rotation);
+                    return rotation;
+                }
+            }
+        });
+    }
+    
+    // Start initial auto-rotation
+    startAutoRotation();
+    
+    // Track rotation with velocity and inertia
+    ScrollTrigger.create({
+        trigger: auditSection,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 0.5,
+        onUpdate: (self) => {
+            const progress = self.progress;
+            const progressDelta = progress - lastProgress;
+            
+            // Calculate velocity
+            const velocity = progressDelta * 100;
+            
+            if (Math.abs(velocity) > 0.01) {
+                isScrolling = true;
+                
+                // Pause auto-rotation while scrolling
+                if (autoRotationTween) {
+                    autoRotationTween.pause();
+                }
+                
+                // Get current rotation and add velocity-based rotation
+                const currentRotation = gsap.getProperty(auditLogo, 'rotation');
+                const additionalRotation = velocity * 15;
+                
+                gsap.to(auditLogo, {
+                    rotation: currentRotation + additionalRotation,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    overwrite: true
+                });
+                
+                // Clear existing timeout
+                clearTimeout(scrollTimeout);
+                
+                // Resume auto-rotation after scrolling stops
+                scrollTimeout = setTimeout(() => {
+                    isScrolling = false;
+                    startAutoRotation(); // Restart from current position
+                }, 200);
+            }
+            
+            lastProgress = progress;
+        }
+    });
+});
+
+// AUDIT REVIEWS VIDEO SCRUB
+// ==========================
+document.addEventListener('DOMContentLoaded', function() {
+    const auditVideo = document.querySelector('.audit-reviews-image');
+    const auditSection = document.querySelector('.audit-reviews');
+    
+    if (!auditVideo || !auditSection) return;
+    
+    // Preload and configure video for optimal playback
+    auditVideo.preload = "auto";
+    auditVideo.muted = true;
+    auditVideo.playsInline = true;
+    auditVideo.disablePictureInPicture = true;
+    
+    let scrollTriggerInstance = null;
+    let retryCount = 0;
+    const maxRetries = 50; // 5 seconds max wait time
+    
+    // Wait for video to be ready
+    const initVideoScrub = () => {
+        // Check if video is ready with valid duration
+        if (!auditVideo.duration || auditVideo.duration === Infinity || isNaN(auditVideo.duration)) {
+            retryCount++;
+            if (retryCount < maxRetries) {
+                setTimeout(initVideoScrub, 100);
+            } else {
+                console.warn('Video failed to load properly after maximum retries');
+            }
+            return;
+        }
+        
+        const videoDuration = auditVideo.duration;
+        
+        // Ensure video starts at beginning
+        auditVideo.currentTime = 0;
+        
+        // Create a proxy object to animate
+        const videoProgress = { value: 0 };
+        
+        // Use GSAP to animate the video time smoothly
+        const animation = gsap.to(videoProgress, {
+            value: videoDuration,
+            ease: "none",
+            scrollTrigger: {
+                trigger: auditSection,
+                start: "top bottom",
+                end: "center center",
+                scrub: 3,
+                onUpdate: (self) => {
+                    // Clamp value to prevent overflow
+                    const clampedTime = Math.min(Math.max(videoProgress.value, 0), videoDuration);
+                    
+                    // Only update if video is in a valid state
+                    if (auditVideo.readyState >= 2) { // HAVE_CURRENT_DATA or better
+                        try {
+                            auditVideo.currentTime = clampedTime;
+                        } catch (e) {
+                            console.warn('Video seek error:', e);
+                        }
+                    }
+                },
+                onEnter: () => {
+                    // Ensure video is ready when entering viewport
+                    if (auditVideo.paused && auditVideo.readyState >= 2) {
+                        auditVideo.currentTime = 0;
+                    }
+                },
+                onLeave: () => {
+                    // Optionally reset video when leaving viewport
+                    // videoProgress.value = 0;
+                },
+                onEnterBack: () => {
+                    // Resume from current position when scrolling back
+                },
+                invalidateOnRefresh: true // Recalculate on window resize
+            }
+        });
+        
+        // Store reference for cleanup
+        scrollTriggerInstance = animation.scrollTrigger;
+    };
+    
+    // Error handling
+    auditVideo.addEventListener('error', (e) => {
+        console.error('Video loading error:', e);
+    });
+    
+    // Handle video stalling
+    auditVideo.addEventListener('stalled', () => {
+        console.warn('Video stalled, attempting to continue...');
+    });
+    
+    // Initialize when metadata is loaded
+    if (auditVideo.readyState >= 1) {
+        initVideoScrub();
+    } else {
+        auditVideo.addEventListener('loadedmetadata', initVideoScrub, { once: true });
+        // Fallback if loadedmetadata never fires
+        setTimeout(() => {
+            if (!scrollTriggerInstance && auditVideo.readyState >= 1) {
+                initVideoScrub();
+            }
+        }, 2000);
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (scrollTriggerInstance) {
+            scrollTriggerInstance.kill();
+        }
+    });
+});
+
+// =====================================
+// FOOTER CTA BUTTON ICON ANIMATION
+// =============================================================================
+// UNIVERSAL ANIMATED BUTTON WITH ICON SWIPE
+// Only handles animations - structure must be in HTML
+// =============================================================================
+function initAnimatedButton(options = {}) {
+    const {
+        buttonSelector,
+        iconWrapperSelector = '.icon-wrapper',
+        arrowIconSelector = '.arrow-icon',
+        textSelector = '.cta-text',
+        leftTextSelector = '.cta-text-left',
+        rightPadding = 28,
+        entranceAnimation = true,
+        scrollTrigger = true,
+        sheenEffect = true,
+        rotateIcon = true
+    } = options;
+
+    const button = typeof buttonSelector === 'string' 
+        ? document.querySelector(buttonSelector) 
+        : buttonSelector;
+    
+    if (!button) return;
+    
+    const iconWrapper = button.querySelector(iconWrapperSelector);
+    const arrowIcon = button.querySelector(arrowIconSelector);
+    const textSpan = button.querySelector(textSelector);
+    const leftTextSpan = button.querySelector(leftTextSelector);
+    
+    if (!iconWrapper) return;
+    
+    // Set initial state
+    gsap.set(iconWrapper, { x: 0 });
+    
+    // Helper function to update text clipping
+    const updateTextClipping = () => {
+        const currentIconRect = iconWrapper.getBoundingClientRect();
+        
+        // Update right text clipping
+        if (textSpan) {
+            const textRect = textSpan.getBoundingClientRect();
+            const clipAmount = Math.max(0, currentIconRect.right - textRect.left);
+            const clipPercent = Math.min(100, (clipAmount / textRect.width) * 100);
+            
+            gsap.set(textSpan, {
+                clipPath: `inset(0% 0% 0% ${clipPercent}%)`,
+                opacity: 1 - (clipPercent / 100)
+            });
+        }
+        
+        // Update left text revealing
+        if (leftTextSpan) {
+            const leftTextRect = leftTextSpan.getBoundingClientRect();
+            const uncoveredAmount = Math.max(0, currentIconRect.left - leftTextRect.left);
+            const revealPercent = Math.min(100, (uncoveredAmount / leftTextRect.width) * 100);
+            
+            gsap.set(leftTextSpan, {
+                clipPath: `inset(0% ${100 - revealPercent}% 0% 0%)`,
+                opacity: revealPercent / 100
+            });
+        }
+    };
+    
+    // Create entrance animation timeline
+    let iconTimeline;
+    if (entranceAnimation) {
+        iconTimeline = gsap.timeline({ paused: true });
+        
+        iconTimeline
+            .to(iconWrapper, { x: 0, duration: 0.3, ease: "power2.out" })
+            .to(iconWrapper, { duration: 0.5 })
+            .to(iconWrapper, { x: 20, duration: 0.2, ease: "power2.out" })
+            .to(iconWrapper, { x: 0, duration: 0.6, ease: "elastic.out(1, 0.5)" });
+        
+        // Trigger animation on viewport entry
+        if (scrollTrigger) {
+            ScrollTrigger.create({
+                trigger: button,
+                start: "top 85%",
+                end: "bottom 15%",
+                onEnter: () => iconTimeline.play(),
+                onLeave: () => iconTimeline.reverse(),
+                onEnterBack: () => iconTimeline.play(),
+                onLeaveBack: () => iconTimeline.reverse(),
+                onRefresh: (self) => {
+                    if (self.isActive) iconTimeline.play();
+                }
+            });
+        }
+    }
+    
+    // Track mouse position for radial sheen effect
+    if (sheenEffect) {
+        button.addEventListener('mousemove', (e) => {
+            const rect = button.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            button.style.setProperty('--mouse-x', `${x}%`);
+            button.style.setProperty('--mouse-y', `${y}%`);
+        });
+    }
+    
+    // Hover animation - icon wipes over text
+    button.addEventListener('mouseenter', () => {
+        if (iconTimeline) iconTimeline.pause();
+        
+        const buttonRect = button.getBoundingClientRect();
+        const iconRect = iconWrapper.getBoundingClientRect();
+        const targetPosition = buttonRect.width - iconRect.width - rightPadding;
+        
+        // Animate icon to right with text clipping
+        gsap.to(iconWrapper, {
+            x: targetPosition,
+            duration: 0.7,
+            ease: "power3.out",
+            overwrite: true,
+            onUpdate: updateTextClipping
+        });
+        
+        // Rotate arrow icon
+        if (rotateIcon && arrowIcon) {
+            gsap.to(arrowIcon, {
+                rotation: 45,
+                duration: 0.7,
+                ease: "back.out(1.7)",
+                overwrite: true
+            });
+        }
+    });
+    
+    button.addEventListener('mouseleave', () => {
+        // Return icon to original position
+        gsap.to(iconWrapper, {
+            x: 0,
+            duration: 1,
+            ease: "bounce.out",
+            overwrite: true,
+            onUpdate: updateTextClipping
+        });
+        
+        // Rotate arrow icon back
+        if (rotateIcon && arrowIcon) {
+            gsap.to(arrowIcon, {
+                rotation: 0,
+                duration: 1,
+                ease: "elastic.out(1, 0.6)",
+                overwrite: true
+            });
+        }
+    });
+}
+
+// Helper function to initialize multiple buttons
+function initMultipleAnimatedButtons(selector, options = {}) {
+    const buttons = document.querySelectorAll(selector);
+    buttons.forEach(button => {
+        initAnimatedButton({
+            buttonSelector: button,
+            ...options
+        });
+    });
+}
+
+// Initialize all animated buttons
+document.addEventListener('DOMContentLoaded', () => {
+    // Default options for all buttons
+    const defaultOptions = {
+        entranceAnimation: true,
+        scrollTrigger: true,
+        sheenEffect: true,
+        rotateIcon: true
+    };
+    
+    // Footer CTA buttons - standard blue version
+    initMultipleAnimatedButtons('.footer-cta-button:not(.white-variant):not(.blue-variant)', {
+        ...defaultOptions,
+        rightPadding: 28
+    });
+    
+    // Footer CTA buttons - white variant (header and how-it-works)
+    initMultipleAnimatedButtons('.footer-cta-button.white-variant', {
+        ...defaultOptions,
+        rightPadding: 12
+    });
+    
+    // Footer CTA buttons - blue variant (social proof section)
+    initMultipleAnimatedButtons('.footer-cta-button.blue-variant', {
+        ...defaultOptions,
+        rightPadding: 12
+    });
+    
+    // Legacy how-it-works CTA (if any remain)
+    initMultipleAnimatedButtons('.how-it-works-cta', {
+        ...defaultOptions,
+        rightPadding: 12
+    });
+
+    // Footer CTA Stagger Animation with Reverse
+    // Animate the CTA button and phone section after heading animation
+    const footerCtaButton = document.querySelector('.footer-cta-content .footer-cta-button');
+    const footerPhoneSection = document.querySelector('.footer-cta-content .footer-phone-section');
+    
+    if (footerCtaButton && footerPhoneSection) {
+        // Set initial states
+        gsap.set([footerCtaButton, footerPhoneSection], {
+            y: 40,
+            opacity: 0
+        });
+        
+        // Create timeline for stagger animation
+        const footerCtaTimeline = gsap.timeline({ paused: true });
+        
+        footerCtaTimeline
+            .to(footerCtaButton, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out"
+            })
+            .to(footerPhoneSection, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out"
+            }, "-=0.4"); // Overlap by 0.4s for stagger effect
+        
+        // Create ScrollTrigger with reverse capability
+        ScrollTrigger.create({
+            trigger: '.footer-cta-content',
+            start: "top 85%",
+            end: "bottom 15%",
+            onEnter: () => footerCtaTimeline.play(),
+            onLeave: () => footerCtaTimeline.reverse(),
+            onEnterBack: () => footerCtaTimeline.play(),
+            onLeaveBack: () => footerCtaTimeline.reverse(),
+            onRefresh: (self) => {
+                if (self.isActive) {
+                    footerCtaTimeline.play();
+                }
+            }
+        });
+    }
+
+    // How It Works Hero Stagger Animation with Reverse
+    // Animate subtitle, title, and CTA button after icon animation
+    const howItWorksSubtitle = document.querySelector('.how-it-works-subtitle');
+    const howItWorksTitle = document.querySelector('.how-it-works-title');
+    const howItWorksCtaWrapper = document.querySelector('.how-it-works-cta-wrapper');
+    
+    if (howItWorksSubtitle && howItWorksTitle && howItWorksCtaWrapper) {
+        // Set initial states
+        gsap.set([howItWorksSubtitle, howItWorksCtaWrapper], {
+            y: 40,
+            opacity: 0
+        });
+        
+        // Create timeline for stagger animation
+        // Note: Title (h2) already has its own animation, so we animate subtitle and CTA
+        const howItWorksHeroTimeline = gsap.timeline({ paused: true });
+        
+        howItWorksHeroTimeline
+            .to(howItWorksSubtitle, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out"
+            })
+            .to(howItWorksCtaWrapper, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out"
+            }, "-=0.4"); // Overlap by 0.4s for stagger effect
+        
+        // Create ScrollTrigger with reverse capability
+        ScrollTrigger.create({
+            trigger: '.how-it-works-hero',
+            start: "top 85%",
+            end: "bottom 15%",
+            onEnter: () => howItWorksHeroTimeline.play(),
+            onLeave: () => howItWorksHeroTimeline.reverse(),
+            onEnterBack: () => howItWorksHeroTimeline.play(),
+            onLeaveBack: () => howItWorksHeroTimeline.reverse(),
+            onRefresh: (self) => {
+                if (self.isActive) {
+                    howItWorksHeroTimeline.play();
+                }
+            }
+        });
+    }
+});
+
+console.log('RPM Website with GSAP initialized!');

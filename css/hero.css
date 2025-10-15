@@ -1,0 +1,261 @@
+/**
+ * Hero Section Styles
+ * Main landing hero with headline, description, and CTAs
+ */
+
+/* ================================
+   Hero Section Container
+   From Figma: bg-[#005aea] pb-[160px] pt-[96px]
+   ================================ */
+
+.hero-section {
+    background-color: var(--color-brand-500); /* #005aea */
+    box-sizing: border-box;
+    padding-top: 160px;    /* 96px - back to Figma spec */
+    padding-bottom: var(--spacing-11xl); /* 160px - back to Figma spec */
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+/* ================================
+   Hero Container
+   From Figma: max-w-[1680px] px-[32px] py-0
+   ================================ */
+
+.hero-container {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: var(--container-max-width-desktop); /* 1680px */
+    overflow: visible;
+    padding: 0 var(--spacing-4xl); /* 32px */
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+/* ================================
+   Hero Content
+   From Figma: flex flex-col gap-[32px] items-center - NO FIXED WIDTH
+   ================================ */
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4xl); /* 32px */
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 1616px;
+    z-index: 1;
+}
+
+/* ================================
+   Hero Headline (H1)
+   From Figma: text-[120px] leading-[120px] tracking-[-2.4px] font-bold w-[min-content]
+   ================================ */
+
+.hero-headline {
+    font-family: var(--font-family-display); /* "Modern Era" */
+    font-size: 120px;
+    font-weight: var(--font-weight-bold); /* Bold/700 */
+    line-height: 120px;
+    letter-spacing: -2.4px;
+    color: var(--text-white); /* #ffffff */
+    text-align: center;
+    margin: 0;
+    position: relative;
+    flex-shrink: 0;
+    width: min-content;
+    min-width: 100%;
+}
+
+/* ================================
+   Hero Description (Paragraph)
+   From Figma: text-[24px] leading-[32px] font-regular w-[1068px]
+   ================================ */
+
+.hero-description {
+    font-family: var(--font-family-display); /* "Modern Era" */
+    font-size: 24px; /* Exact from Figma */
+    font-weight: var(--font-weight-regular); /* Regular/400 */
+    line-height: 32px; /* Exact from Figma */
+    color: var(--text-white); /* #ffffff */
+    text-align: center;
+    margin: 0;
+    position: relative;
+    flex-shrink: 0;
+    width: 1068px;
+    max-width: 100%;
+}
+
+/* ================================
+   Hero Buttons Wrapper
+   From Figma: flex gap-[12px] items-center pt-[20px]
+   ================================ */
+
+.hero-buttons {
+    box-sizing: border-box;
+    display: flex;
+    gap: var(--spacing-lg); /* 12px */
+    align-items: center;
+    padding-bottom: 0;
+    padding-top: var(--spacing-2xl); /* 20px */
+    padding-left: 0;
+    padding-right: 0;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* ================================
+   Use existing button classes from global-buttons.css
+   - .btn-secondary-outline (already defined globally)
+   - .btn-primary-light (already defined globally)
+   ================================ */
+
+/* ================================
+   Responsive Styles
+   ================================ */
+
+/* Large Desktop */
+@media (max-width: 1680px) {
+    .hero-headline {
+        font-size: 100px;
+        line-height: 100px;
+        letter-spacing: -2px;
+    }
+}
+
+/* Tablet Landscape */
+@media (max-width: 1200px) {
+    .hero-section {
+        padding-top: var(--spacing-7xl); /* 64px */
+        padding-bottom: var(--spacing-8xl); /* 80px */
+    }
+
+    .hero-headline {
+        font-size: var(--font-size-display-2xl); /* 72px */
+        line-height: var(--line-height-display-2xl); /* 80px */
+        letter-spacing: -1.44px;
+    }
+
+    .hero-description {
+        font-size: var(--font-size-text-xl); /* 20px */
+        line-height: 28px;
+        width: 100%;
+        max-width: 800px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .hero-section {
+        padding-top: var(--spacing-6xl); /* 48px */
+        padding-bottom: var(--spacing-7xl); /* 64px */
+    }
+
+    .hero-container {
+        padding: 0 var(--spacing-xl); /* 16px */
+    }
+
+    .hero-content {
+        gap: var(--spacing-3xl); /* 24px */
+    }
+
+    .hero-headline {
+        font-size: var(--font-size-display-lg); /* 48px */
+        line-height: var(--line-height-display-lg); /* 60px */
+        letter-spacing: -0.96px;
+        width: 100%;
+        min-width: auto;
+    }
+
+    .hero-description {
+        font-size: var(--font-size-text-lg); /* 18px */
+        line-height: 26px;
+        width: 100%;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        padding-top: var(--spacing-xl); /* 16px */
+        gap: var(--spacing-md); /* 8px */
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ================================
+   Hero Spline Animation Styles - Fullscreen Background
+   ================================ */
+
+.hero-spline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.hero-spline spline-viewer {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    overflow: hidden;
+}
+
+/* Responsive adjustments - maintain hero section background */
+@media (max-width: 1200px) {
+    .hero-spline {
+        /* Maintain hero section background positioning */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .hero-spline spline-viewer {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-spline {
+        /* Maintain hero section background positioning */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .hero-spline spline-viewer {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 0;
+    }
+}

@@ -1,0 +1,451 @@
+/**
+ * Global Button System
+ * Universal button styles for all button variants across the site
+ */
+
+/* ================================
+   Base Button Structure
+   ================================ */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    font-family: var(--font-family-display);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    white-space: nowrap;
+}
+
+.btn .icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    will-change: transform;
+    z-index: 10;
+}
+
+.btn .arrow-icon {
+    will-change: transform;
+}
+
+.btn .cta-text-left {
+    position: absolute;
+    display: inline-block;
+    clip-path: inset(0% 100% 0% 0%);
+    opacity: 0;
+    z-index: 1;
+}
+
+.btn .cta-text {
+    display: inline-block;
+    z-index: 1;
+    position: relative;
+}
+
+
+
+/* ================================
+   PRIMARY LIGHT (White Background)
+   Icon swipes on left, white bg, dark blue text & icon
+   Usage: How It Works section
+   ================================ */
+
+.btn-primary-light {
+    background-color: var(--color-white);
+    border: 2px solid transparent;
+    color: var(--color-client-dark-blue);
+    padding: 12px var(--spacing-lg) 12px 55px;
+    font-size: var(--font-size-text-md);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-xl);
+    width: auto;
+}
+
+.btn-primary-light:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: var(--color-client-dark-blue);
+}
+
+.btn-primary-light .icon-wrapper {
+    position: absolute;
+    left: var(--spacing-xs);
+    width: 39px;
+    height: 39px;
+    background-color: var(--color-brand-500);
+    border-radius: var(--radius-md);
+}
+
+.btn-primary-light .arrow-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-white);
+}
+
+.btn-primary-light .cta-text-left {
+    left: 12px;
+}
+
+.btn-primary-light .cta-text,
+.btn-primary-light .cta-text-left {
+    will-change: clip-path, opacity;
+}
+
+/* ================================
+   PRIMARY DARK (Blue Background)
+   Icon swipes on left, blue bg, white text & icon
+   Usage: Social Proof section
+   ================================ */
+
+.btn-primary-dark {
+    background-color: var(--color-brand-500);
+    border: 2px solid transparent;
+    color: var(--color-white);
+    padding: 12px var(--spacing-lg) 12px 55px;
+    font-size: var(--font-size-text-md);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-xl);
+    width: auto;
+}
+
+.btn-primary-dark:hover {
+    background-color: var(--color-brand-600);
+    color: var(--color-white);
+}
+
+.btn-primary-dark .icon-wrapper {
+    position: absolute;
+    left: var(--spacing-xs);
+    width: 39px;
+    height: 39px;
+    background-color: var(--color-white);
+    border-radius: var(--radius-md);
+}
+
+.btn-primary-dark .arrow-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-brand-500);
+}
+
+.btn-primary-dark .cta-text-left {
+    left: 12px;
+}
+
+.btn-primary-dark .cta-text,
+.btn-primary-dark .cta-text-left {
+    will-change: clip-path, opacity;
+}
+
+/* ================================
+   PRIMARY DARK XL (Large Footer CTA)
+   Icon swipes on left, blue bg, white text, larger size
+   Usage: Footer CTA
+   ================================ */
+
+.btn-primary-dark-xl {
+    background-color: var(--color-brand-500);
+    border-radius: var(--spacing-3xl);
+    padding: 27px var(--spacing-6xl) 27px 136px;
+    color: var(--text-white);
+    font-size: var(--font-size-display-md);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: -0.72px;
+    width: 375px;
+    justify-content: flex-start;
+    transition: background-color 0.4s ease;
+}
+
+.btn-primary-dark-xl:hover {
+    background-color: var(--color-brand-600);
+    color: var(--text-white);
+    text-decoration: none;
+}
+
+.btn-primary-dark-xl .icon-wrapper {
+    position: absolute;
+    left: 14px;
+    width: 78px;
+    height: 78px;
+    background: var(--text-white);
+    border-radius: var(--spacing-lg);
+}
+
+.btn-primary-dark-xl .arrow-icon {
+    width: 58px;
+    height: 58px;
+    color: var(--color-brand-500);
+}
+
+.btn-primary-dark-xl .cta-text-left {
+    left: 48px;
+}
+
+/* ================================
+   SECONDARY WHITE (Simple White Button)
+   White bg with dark text, cursor-reactive fill with light grey
+   Usage: Insights "Read more" button
+   ================================ */
+
+.btn-secondary-white {
+    background-color: var(--text-white);
+    border: 2px solid var(--text-white);
+    padding: 12px 18px;
+    font-size: var(--font-size-text-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary-900);
+    border-radius: var(--spacing-lg);
+    width: auto;
+    min-width: auto;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Simple fill overlay - light grey background */
+.btn-secondary-white::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-brand-25);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.btn-secondary-white.is-hovered::after {
+    opacity: 1;
+}
+
+.btn-secondary-white .cta-text {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    gap: 0.3em;
+    color: var(--text-primary-900);
+    overflow: hidden;
+}
+
+.btn-secondary-white .cta-text .word {
+    display: inline-block;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ================================
+   SECONDARY OUTLINE (White Outline)
+   No icon, transparent bg, white border, white text
+   Usage: RPM Difference section outline button
+   ================================ */
+
+.btn-secondary-outline {
+    background-color: transparent;
+    border: 2px solid var(--text-white);
+    padding: 12px 18px;
+    font-size: var(--font-size-text-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-white);
+    border-radius: var(--spacing-lg);
+    width: auto;
+    min-width: auto;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+/* Simple fill overlay - white background */
+.btn-secondary-outline::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--text-white);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.btn-secondary-outline.is-hovered::after {
+    opacity: 1;
+}
+
+.btn-secondary-outline .cta-text {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    gap: 0.3em;
+    color: var(--text-white);
+    mix-blend-mode: difference;
+    overflow: hidden;
+}
+
+.btn-secondary-outline .cta-text .word {
+    display: inline-block;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Hide icon wrapper if present */
+.btn-secondary-outline .icon-wrapper {
+    display: none;
+}
+
+.btn-secondary-outline .cta-text-left,
+.btn-secondary-outline .cta-text {
+    position: static;
+    clip-path: none;
+    opacity: 1;
+}
+
+/* ================================
+   Responsive Adjustments
+   ================================ */
+
+@media (max-width: 768px) {
+    .btn-primary-dark-xl {
+        width: 100%;
+        max-width: 375px;
+        font-size: var(--font-size-display-sm);
+        padding: 22px var(--spacing-4xl) 22px 120px;
+    }
+    
+    .btn-primary-dark-xl .icon-wrapper {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .btn-primary-dark-xl .arrow-icon {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-primary-light,
+    .btn-primary-dark {
+        font-size: var(--font-size-text-sm);
+        padding: 10px var(--spacing-md) 10px 50px;
+    }
+    
+    .btn-primary-light .icon-wrapper,
+    .btn-primary-dark .icon-wrapper {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .btn-primary-light .arrow-icon,
+    .btn-primary-dark .arrow-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ================================
+   Text Link Buttons (with diagonal arrow)
+   ================================ */
+
+/* Base text link button */
+.btn-text-link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+.btn-text-link-text {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-text-md);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-text-md);
+    margin: 0;
+    white-space: nowrap;
+    color: var(--color-client-light-blue);
+}
+
+.btn-text-link-icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-text-link-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--color-client-light-blue);
+    transition: stroke 0.3s ease;
+}
+
+/* Variant 1: Simple underline on hover */
+.btn-text-link-simple {
+    padding-bottom: var(--spacing-lg);
+}
+
+.btn-text-link-simple:hover .btn-text-link-text {
+    text-decoration: underline;
+}
+
+/* Variant 2: Bordered with background fill on hover */
+.btn-text-link-bordered {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border: 2px solid var(--color-client-light-blue);
+    border-radius: var(--radius-xl);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-text-link-bordered:hover {
+    background-color: var(--color-client-light-blue);
+}
+
+.btn-text-link-bordered:hover .btn-text-link-text {
+    color: var(--color-client-dark-blue);
+}
+
+.btn-text-link-bordered:hover .btn-text-link-icon svg {
+    stroke: var(--color-client-dark-blue);
+}
+
+/* Dark theme variant (for light backgrounds) */
+.btn-text-link-dark .btn-text-link-text {
+    color: var(--color-brand-500);
+}
+
+.btn-text-link-dark .btn-text-link-icon svg {
+    stroke: var(--color-brand-500);
+}
+
+.btn-text-link-dark.btn-text-link-bordered {
+    border-color: var(--color-brand-500);
+}
+
+.btn-text-link-dark.btn-text-link-bordered:hover {
+    background-color: var(--color-brand-500);
+}
+
+.btn-text-link-dark.btn-text-link-bordered:hover .btn-text-link-text {
+    color: var(--color-white);
+}
+
+.btn-text-link-dark.btn-text-link-bordered:hover .btn-text-link-icon svg {
+    stroke: var(--color-white);
+}
+

@@ -1,0 +1,168 @@
+/* Import Figma Design Variables */
+@import url('variables.css');
+
+/* ============================================
+   GLOBAL STYLES & VARIABLES
+   ============================================ */
+
+/* Note: All variables are now imported from variables.css */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family-body);
+    color: var(--color-black);
+    background-color: var(--color-white);
+}
+
+/* Reset Foundation's default margins */
+.grid-container.fluid {
+    max-width: 100%;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ============================================
+   GLOBAL ICON SIZES
+   ============================================ */
+
+/* Global arrow icon sizing - 24x24px per Figma design */
+.cta-icon img,
+.cta-icon svg,
+.how-it-works-cta-icon-wrapper svg,
+.how-it-works-step-cta-icon svg,
+.pay-as-you-go-cta-icon svg,
+.audit-reviews-cta-icon svg,
+.success-stories-cta-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+/* Global arrow icon stroke weight */
+.cta-icon svg path,
+.how-it-works-cta-icon-wrapper svg path,
+.how-it-works-step-cta-icon svg path,
+.pay-as-you-go-cta-icon svg path,
+.audit-reviews-cta-icon svg path,
+.success-stories-cta-icon svg path {
+    stroke-width: 3 !important;
+}
+
+/* Global arrow icon container sizing */
+.cta-icon,
+.how-it-works-cta-icon-wrapper,
+.how-it-works-step-cta-icon,
+.pay-as-you-go-cta-icon,
+.audit-reviews-cta-icon,
+.success-stories-cta-icon {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* ============================================
+   GSAP SPLIT TEXT ANIMATIONS
+   ============================================ */
+
+/* Enhance split text rendering for smoother animations */
+h2 {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+h2 .line {
+    display: block;
+    position: relative;
+}
+
+h2 .word {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    margin-right: 0;
+}
+
+h2 .word-wrapper {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    margin-right: 0;
+}
+
+h2 .word-inner {
+    display: inline-block;
+    will-change: transform;
+}
+
+h2 .char {
+    display: inline-block;
+}
+
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-center {
+    text-align: center;
+}
+
+.text-white {
+    color: var(--color-white);
+}
+
+
+/* ============================================
+   HERO SECTION - PLACEHOLDER
+   ============================================ */
+
+.hero-section {
+    padding: var(--spacing-8xl) 0;
+    background-color: var(--color-brand-500);
+    min-height: 100vh;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hero styles moved to hero.css */
+
+
+/* ============================================
+   FOOTER - PLACEHOLDER
+   ============================================ */
+
+.site-footer {
+    background-color: var(--text-primary-900);
+    color: var(--color-white);
+    padding: var(--spacing-6xl) 0;
+    margin-top: var(--spacing-8xl);
+}
+
+.site-footer p {
+    margin: 0;
+    text-align: center;
+}
+
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media screen and (max-width: 768px) {
+    .hero-section h1 {
+        font-size: var(--font-size-display-sm);
+    }
+    
+    .hero-section p {
+        font-size: var(--font-size-text-md);
+    }
+}

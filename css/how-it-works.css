@@ -1,0 +1,433 @@
+/* How It Works Section */
+.how-it-works {
+    background: linear-gradient(0deg, var(--color-client-dark-blue, #000059) -206.31%, var(--color-client-primary-blue, #005AEA) 98.89%), var(--color-brand-500, #005AEA);
+    padding: var(--spacing-10xl) 0 var(--spacing-11xl) 0;
+    position: relative;
+    border-radius: 48px 48px 0 0;
+    overflow: hidden;
+    margin-top: -48px;
+    z-index: 3;
+}
+
+.how-it-works-container {
+    max-width: var(--container-max-width-desktop);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4xl);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+}
+
+/* Hero Section */
+.how-it-works-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2xl);
+    width: 100%;
+}
+
+.how-it-works-icon {
+    width: var(--font-size-heading-4xl); /* 60px */
+    height: 59.977px; /* Unique - matches design spec */
+    margin-bottom: 0;
+}
+
+.how-it-works-icon img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.how-it-works-subtitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-text-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-client-light-blue);
+    line-height: var(--line-height-text-xl);
+    margin: 0;
+    text-align: center;
+}
+
+.how-it-works-title {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-heading-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    line-height: var(--line-height-display-xl);
+    letter-spacing: -1.2px;
+    margin: 0;
+    max-width: 1344px; /* Unique max-width for title */
+    text-align: center;
+}
+
+.how-it-works-cta-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 32px;
+    width: 100%;
+    overflow: visible;
+    position: relative;
+    z-index: 10;
+}
+
+.how-it-works-cta {
+    background-color: var(--color-white);
+    border: 2px solid var(--color-white);
+    border-radius: var(--radius-xl);
+    padding: 12px var(--spacing-lg) 12px 55px; /* Smaller padding than footer */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    color: var(--color-client-dark-blue);
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-text-md);
+    font-weight: var(--font-weight-semibold);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.4s ease;
+    z-index: 1;
+}
+
+.how-it-works-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle 150px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 90, 234, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.how-it-works-cta:hover::before {
+    opacity: 1;
+}
+
+.how-it-works-cta:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+.how-it-works-cta .icon-wrapper {
+    position: absolute;
+    left: var(--spacing-xs);
+    width: 39px;
+    height: 39px;
+    background-color: var(--color-brand-500);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.how-it-works-cta .arrow-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-white);
+}
+
+.how-it-works-cta .cta-text-left {
+    position: absolute;
+    left: 12px;
+    display: inline-block;
+    clip-path: inset(0% 100% 0% 0%);
+    opacity: 0;
+    z-index: 2;
+}
+
+.how-it-works-cta .cta-text {
+    display: inline-block;
+    z-index: 2;
+}
+
+/* Steps Section */
+.how-it-works-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    align-items: flex-start;
+    justify-content: center;
+    width: 1616px; /* Unique - exact layout width for 3 cards + 2 connectors */
+    margin: 0 auto;
+    position: relative;
+    overflow: visible;
+}
+
+/* S-Curve Connectors */
+.how-it-works-connector {
+    width: var(--spacing-10xl); /* 128px */
+    height: 453.333px; /* Unique - matches card height */
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    overflow: visible;
+    position: relative;
+    z-index: 100;
+}
+
+.how-it-works-connector svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.how-it-works-connector path {
+    opacity: 0;
+}
+
+/* End cap styling */
+.connector-end-cap {
+    opacity: 0;
+    position: absolute;
+    width: 28px; /* Unique end cap size */
+    height: 29px;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.end-cap-1 {
+    bottom: 0;
+    margin-bottom: -15px;
+    right: 0;
+    transform: translate(50%, 50%);
+}
+
+.end-cap-2 {
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+}
+
+/* Spark particles */
+.spark {
+    opacity: 0;
+    z-index: 999;
+}
+
+/* Step Cards */
+.how-it-works-step {
+    width: 453.333px; /* Unique card width */
+    height: 453.333px;
+    aspect-ratio: 1 / 1;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: var(--spacing-6xl);
+    padding: var(--spacing-6xl);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: relative;
+    /* Modern tinted shadow - removed from main element */
+    /* Animation initial state */
+    opacity: 0;
+    transform: translateY(40px);
+    /* CSS variable for shadow opacity */
+    --shadow-opacity: 0;
+}
+
+/* SVG border for clockwise stroke animation */
+.how-it-works-step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--spacing-6xl);
+    pointer-events: none;
+    /* Shadow on pseudo-element for better performance */
+    box-shadow: 182px 181px 72px 0 rgba(6, 14, 55, 0.00), 116px 116px 66px 0 rgba(6, 14, 55, 0.01), 65px 65px 55px 0 rgba(6, 14, 55, 0.05), 29px 29px 41px 0 rgba(6, 14, 55, 0.09), 7px 7px 23px 0 rgba(6, 14, 55, 0.10);
+    opacity: var(--shadow-opacity);
+    z-index: -1;
+}
+
+.how-it-works-step-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.how-it-works-step-border-path {
+    stroke: var(--color-client-light-blue);
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 1800; /* Unique - for animation */
+    stroke-dashoffset: 1800;
+}
+
+.how-it-works-step-content {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Step 1 & 3 - Standard layout with 24px gap */
+.how-it-works-step.step-1 .how-it-works-step-content,
+.how-it-works-step.step-3 .how-it-works-step-content {
+    gap: var(--spacing-lg); /* 10px unique spacing */
+    justify-content: flex-end;
+}
+
+/* Step 2 - Different gap and offset */
+.how-it-works-step.step-2 .how-it-works-step-content {
+    gap: 0;
+}
+
+.how-it-works-step-wrapper {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.how-it-works-step-wrapper.step-2-wrapper {
+    padding-top: 160px;
+}
+
+.how-it-works-step-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+    flex-grow: 1;
+    height: 100%;
+}
+
+.how-it-works-step-number {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-text-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-brand-500);
+    line-height: var(--line-height-text-xl);
+    margin: 0;
+}
+
+.how-it-works-step-title {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-display-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary-900);
+    line-height: var(--line-height-display-sm);
+    margin: 0;
+}
+
+.how-it-works-step-description {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-text-lg);
+    font-weight: var(--font-weight-regular);
+    color: var(--text-secondary-700);
+    line-height: var(--line-height-text-lg);
+    margin: 0;
+    padding-right: var(--spacing-7xl);
+    flex-grow: 0;
+}
+
+/* Step 3 Content Wrapper */
+.how-it-works-step-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Step 3 CTA */
+.how-it-works-step-cta-wrapper {
+    padding-top: 12px;
+}
+
+/* Connector Lines */
+.how-it-works-connector-1,
+.how-it-works-connector-2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.how-it-works-connector-1 svg,
+.how-it-works-connector-2 svg {
+    width: 100%;
+    height: 100%;
+}
+
+.how-it-works-connector-1 path,
+.how-it-works-connector-2 path {
+    stroke: var(--color-client-light-blue);
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+}
+
+/* Decorative Squares */
+.how-it-works-square-group-1 {
+    position: absolute;
+    left: 568px; /* Unique positioning for design */
+    top: 447.5px;
+    pointer-events: none;
+    /* Animation initial state */
+    opacity: 0;
+    transform: scale(0);
+}
+
+.how-it-works-square-large-1 {
+    width: 19.799px; /* Unique decorative element size */
+    height: 19.799px;
+    background-color: var(--color-client-light-blue);
+    border-radius: var(--spacing-xs);
+    transform: rotate(45deg);
+}
+
+.how-it-works-square-small-1 {
+    width: 5.824px; /* Unique decorative element size */
+    height: 5.824px;
+    background-color: var(--color-brand-500);
+    border-radius: 1px;
+    transform: rotate(45deg);
+    position: absolute;
+    left: 9.88px;
+    top: 9.88px;
+}
+
+.how-it-works-square-group-2 {
+    position: absolute;
+    left: 1150px; /* Unique positioning for design */
+    top: 129.5px;
+    pointer-events: none;
+    /* Animation initial state */
+    opacity: 0;
+    transform: scale(0);
+}
+
+.how-it-works-square-large-2 {
+    width: 19.799px; /* Unique decorative element size */
+    height: 19.799px;
+    background-color: var(--color-client-light-blue);
+    border-radius: var(--spacing-xs);
+    transform: rotate(45deg);
+}
+
+.how-it-works-square-small-2 {
+    width: 5.824px; /* Unique decorative element size */
+    height: 5.824px;
+    background-color: var(--color-brand-500);
+    border-radius: 1px;
+    transform: rotate(45deg);
+    position: absolute;
+    left: 9.88px;
+    top: 9.88px;
+}

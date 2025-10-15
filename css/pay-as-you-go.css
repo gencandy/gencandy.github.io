@@ -1,0 +1,308 @@
+/* Pay As You Go Section */
+.pay-as-you-go {
+    background: linear-gradient(0deg, var(--color-client-dark-blue, #000059) -105.12%, var(--color-client-primary-blue, #005AEA) 198.77%), var(--color-brand-500, #005AEA);
+    padding: 0 0 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.pay-as-you-go-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-7xl);
+}
+
+/* Header Section */
+.pay-as-you-go-header {
+    max-width: var(--container-max-width-desktop);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4xl);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pay-as-you-go-header-inner {
+    max-width: var(--width-4xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4xl);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pay-as-you-go-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+    max-width: 1082px; /* Unique text container width */
+}
+
+.pay-as-you-go-subtitle {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-text-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-client-light-blue);
+    line-height: var(--line-height-text-xl);
+    margin: 0;
+}
+
+.pay-as-you-go-title {
+    font-family: var(--font-family-display);
+    font-size: var(--font-size-display-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-white);
+    line-height: var(--line-height-display-lg);
+    letter-spacing: -0.96px;
+    margin: 0;
+    max-width: 1024px; /* Unique title max-width */
+    text-wrap: balance;
+}
+
+/* Carousel Container */
+.pay-as-you-go-carousel {
+    position: relative;
+    max-width: var(--container-max-width-desktop);
+    margin: 0 auto;
+    padding-left: var(--spacing-4xl);
+    overflow: visible;
+}
+
+.pay-as-you-go-carousel-track {
+    display: flex;
+    gap: var(--spacing-2xl);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card Styles */
+.pay-as-you-go-card {
+    min-width: 450px; /* Unique card width */
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.pay-as-you-go-card-image {
+    width: 100%;
+    height: 600px; /* Unique card height */
+    background: var(--color-client-primary-blue);
+    border-radius: var(--spacing-6xl);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, background-color 0.8s ease;
+}
+
+.pay-as-you-go-card-button {
+    position: absolute;
+    bottom: 34.83px; /* Unique positioning */
+    right: 35px;
+    width: var(--spacing-6xl);
+    height: var(--spacing-6xl);
+    background-color: var(--color-white);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.pay-as-you-go-card-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pay-as-you-go-card-button svg {
+    width: var(--spacing-4xl); /* 30px */
+    height: var(--spacing-4xl);
+    stroke: var(--color-brand-500);
+    stroke-width: 2;
+    transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.pay-as-you-go-card-button:hover svg {
+    transform: rotate(90deg);
+}
+
+.pay-as-you-go-card-button:hover {
+    background-color: var(--color-brand-50);
+}
+
+/* Hover state - transform card image on hover */
+.pay-as-you-go-card-image:hover {
+    box-shadow: 0 0 12.3px -1px var(--color-brand-25, #EAF2FF) inset, 0 0 60px -10px var(--color-brand-200, #6AA3FF) inset, 0 0 60px 18px var(--color-brand-500, #005AEA) inset;
+}
+
+/* Disable hover effects during animation */
+.pay-as-you-go-card-image.hover-disabled {
+    pointer-events: none !important;
+}
+
+.pay-as-you-go-card-image.hover-disabled:hover {
+    box-shadow: none !important;
+}
+
+/* Disable all card interactions during animation */
+.pay-as-you-go-card.hover-disabled {
+    pointer-events: none !important;
+}
+
+.pay-as-you-go-card.hover-disabled * {
+    pointer-events: none !important;
+}
+
+.pay-as-you-go-card-content {
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-4xl) var(--spacing-2xl) 0;
+    display: flex;
+    gap: var(--spacing-xl);
+    align-items: center;
+}
+
+.pay-as-you-go-card-text {
+    flex: 1;
+}
+
+.pay-as-you-go-card-paragraph {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-text-xl);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-white);
+    line-height: var(--line-height-text-xl);
+    margin: 0;
+    text-wrap: balance;
+}
+
+.pay-as-you-go-card-title {
+    font-family: var(--font-family-display);
+    font-weight: var(--font-weight-medium);
+    text-wrap: balance;
+}
+
+.pay-as-you-go-card-description {
+    font-family: var(--font-family-body);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-brand-50);
+    text-wrap: balance;
+}
+
+/* Navigation Controls */
+.pay-as-you-go-navigation {
+    max-width: var(--container-max-width-desktop);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4xl);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.pay-as-you-go-navigation-inner {
+    max-width: var(--width-4xl);
+    margin: 0 auto;
+    padding: 0 var(--spacing-4xl);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-2xl);
+}
+
+.pay-as-you-go-nav-button {
+    width: var(--spacing-6xl);
+    height: var(--spacing-6xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    background-color: rgba(21, 111, 255, 0.3);
+}
+
+.pay-as-you-go-nav-button svg {
+    width: var(--spacing-2xl);
+    height: var(--spacing-2xl);
+    stroke: var(--color-brand-200);
+    stroke-width: 2;
+}
+
+.pay-as-you-go-nav-button:hover {
+    background-color: rgba(21, 111, 255, 0.5);
+}
+
+.pay-as-you-go-nav-button.active {
+    background-color: var(--color-brand-400);
+}
+
+.pay-as-you-go-nav-button.active svg {
+    stroke: var(--color-white);
+}
+
+.pay-as-you-go-nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .pay-as-you-go-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-4xl);
+    }
+    
+    .pay-as-you-go-title {
+        font-size: var(--font-size-display-md);
+        line-height: 44px; /* Unique responsive line height */
+    }
+    
+    .pay-as-you-go-card {
+        min-width: 380px; /* Unique responsive card width */
+        width: 380px;
+    }
+    
+    .pay-as-you-go-card-image {
+        height: 500px; /* Unique responsive card height */
+    }
+}
+
+@media (max-width: 768px) {
+    .pay-as-you-go {
+        padding: var(--spacing-8xl) 0 0;
+    }
+    
+    .pay-as-you-go-wrapper {
+        padding: 0 var(--spacing-2xl);
+        gap: var(--spacing-6xl);
+    }
+    
+    .pay-as-you-go-header {
+        padding: 0 var(--spacing-lg);
+    }
+    
+    .pay-as-you-go-title {
+        font-size: 28px; /* Unique mobile font size */
+        line-height: 36px;
+    }
+    
+    .pay-as-you-go-card {
+        min-width: 320px; /* Unique mobile card width */
+        width: 320px;
+    }
+    
+    .pay-as-you-go-card-image {
+        height: 400px; /* Unique mobile card height */
+        border-radius: var(--spacing-4xl);
+    }
+    
+    .pay-as-you-go-card-title,
+    .pay-as-you-go-card-description {
+        font-size: var(--font-size-text-lg);
+        line-height: 26px; /* Unique mobile line height */
+    }
+    
+    .pay-as-you-go-navigation {
+        padding: 0 var(--spacing-lg);
+    }
+}
